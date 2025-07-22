@@ -1,0 +1,104 @@
+[gd_scene load_steps=11 format=3 uid="uid://b3njxresgujt7"]
+
+[ext_resource type="Script" path="res://Inventmanagement.gd" id="1_myrrr"]
+[ext_resource type="Texture2D" uid="uid://cjiufliqpfxoq" path="res://Sprite-grid1.png" id="2_5ayuh"]
+[ext_resource type="PackedScene" uid="uid://bw4h3vj131fds" path="res://prefabs/book1.tscn" id="3_jd3gd"]
+[ext_resource type="PackedScene" uid="uid://8jowlvslff8v" path="res://prefabs/book2.tscn" id="4_2bn8w"]
+[ext_resource type="PackedScene" uid="uid://r2t8oygyadkp" path="res://prefabs/sword1.tscn" id="5_k0ysj"]
+[ext_resource type="PackedScene" uid="uid://xhymuib7qri6" path="res://prefabs/sword2.tscn" id="6_8u6mv"]
+[ext_resource type="PackedScene" uid="uid://od4mmm2howmn" path="res://prefabs/cookie1.tscn" id="7_ino0l"]
+[ext_resource type="PackedScene" uid="uid://b3mp52au2ux02" path="res://prefabs/cookie2.tscn" id="8_ctca1"]
+[ext_resource type="PackedScene" uid="uid://bt1a3m026ylr6" path="res://prefabs/cookie3.tscn" id="9_ml7u4"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ksj3r"]
+size = Vector2(320, 320)
+
+[node name="Control" type="Control"]
+texture_filter = 5
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 56.0
+offset_top = 72.0
+offset_right = 56.0
+offset_bottom = 72.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_myrrr")
+
+[node name="InventoryPanel" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 320.0
+offset_bottom = 320.0
+color = Color(0.051971, 0.051971, 0.051971, 1)
+
+[node name="InventoryGrids" type="Sprite2D" parent="."]
+texture_filter = 5
+texture_repeat = 2
+texture = ExtResource("2_5ayuh")
+centered = false
+region_rect = Rect2(0, 0, 512, 512)
+
+[node name="Inventory" type="Area2D" parent="InventoryGrids"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InventoryGrids/Inventory"]
+position = Vector2(160, 160)
+shape = SubResource("RectangleShape2D_ksj3r")
+
+[node name="Book1" parent="." instance=ExtResource("3_jd3gd")]
+layout_mode = 1
+offset_left = 480.0
+offset_top = 200.0
+offset_right = 479.488
+offset_bottom = 199.848
+
+[node name="Book2" parent="." instance=ExtResource("4_2bn8w")]
+layout_mode = 1
+offset_left = 392.0
+offset_top = 200.0
+offset_right = 391.488
+offset_bottom = 199.848
+
+[node name="Sword2" parent="." instance=ExtResource("6_8u6mv")]
+layout_mode = 1
+offset_left = 392.0
+offset_top = 24.0
+offset_right = 392.64
+offset_bottom = 23.696
+
+[node name="Sword1" parent="." instance=ExtResource("5_k0ysj")]
+layout_mode = 1
+offset_left = 488.0
+offset_top = 24.0
+offset_right = 487.488
+offset_bottom = 23.696
+
+[node name="Cookie1" parent="." instance=ExtResource("7_ino0l")]
+layout_mode = 1
+offset_left = 520.0
+offset_top = 304.0
+offset_right = 519.744
+offset_bottom = 304.248
+
+[node name="Cookie2" parent="." instance=ExtResource("8_ctca1")]
+layout_mode = 1
+offset_left = 464.0
+offset_top = 304.0
+offset_right = 463.744
+offset_bottom = 304.248
+
+[node name="Cookie3" parent="." instance=ExtResource("9_ml7u4")]
+layout_mode = 1
+offset_left = 408.0
+offset_top = 304.0
+offset_right = 407.744
+offset_bottom = 304.248
+
+[node name="btn_SortInventory" type="Button" parent="."]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 344.0
+offset_right = 192.0
+offset_bottom = 384.0
+text = "Sort Inventory"

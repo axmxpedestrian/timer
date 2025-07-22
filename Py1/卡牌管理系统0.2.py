@@ -332,7 +332,116 @@ class CardManager:
         except ValueError:
             print("请输入有效的数字序号!")
 
-
+def battle_royale(self):
+    if not self.cards:
+        print("当前没有卡牌!")
+        return
+    
+    # 获取所有稀有度列表
+    rarities = list(set(card.rarity for card in self.cards))
+    print("\n可用稀有度:", ", ".join(rarities))
+    
+    rarity = input("请输入要混战的稀有度: ")
+    
+    # 筛选指定稀有度的卡牌 列表推导式
+    battle_cards = [card for card in self.cards if card.rarity == rarity]
+    
+    if not battle_cards:
+        print(f"没有找到稀有度为 {rarity} 的卡牌!")
+        return
+    
+    print(f"\n开始 {rarity} 稀有度混战，共有 {len(battle_cards)} 张卡牌参与:")
+    for card in battle_cards:
+        print(f"- {card.name} (属性: {card.element})")
+    
+    # 初始化统计数据结构
+    battle_stats = {}
+    for card in battle_cards:
+        battle_stats[card.name] = {
+            'wins': 0,
+            'losses': 0,
+            'defeated_opponents': [],  # 格式: [对手名称(属性)]
+            'lost_to_opponents': []    # 格式: [对手名称(属性)]
+        }
+    
+    # 进行所有可能的1对1对战
+    total_battles = len(battle_cards) * (len(battle_cards) - 1) // 2
+    print(f"\n将进行 {total_battles} 场对战...")
+    
+    for i in range(len(battle_cards)):
+        for j in range(i + 1, len(battle_cards)):
+            card1 = battle_cards[i]
+            card2 = battle_cards[j]
+            
+            # 创建副本以避免修改原始卡牌数据
+            c1 = Card(card1.name, card1.hp, card1.attack, card1.defense, card1.element, card1.rarity)
+            c2 = Card(card2.name, card2.hp, card2.attack, card2.defense, card2.element, card2.rarity)
+            
+            # 对战直到分出胜负或最多20回合
+            round_num = 1
+            while c1.hp > 0 and c2.hp > 0 and round_num <= 20:
+                # 计算实际攻击力（考虑属性克制）
+                attack1 = self.calculate_attack(c1, c2)
+                attack2 = self.calculate_attack(c2, c1)
+                
+                # 计算伤害
+                damage1 = max(1, attack1 - c2.defense) if attack1 > c2.defense else 1
+                damage2 = max(1, attack2 - c1.defense) if attack2 > c1.defense else 1
+                
+                # 应用伤害
+                c2.hp -= damage1
+                c1.hp -= damage2
+                
+                # 确保血量不低于0
+                c1.hp = max(0, c1.hp)
+                c2.hp = max(0, c2.hp)
+                
+                round_num += 1
+            
+            # 记录对战结果
+            if (c1.hp <= 0 and c2.hp <= 0) or (c1.hp == c2.hp):
+                # 平局，双方都不计胜负
+                battle_stats[card1.name]['lost_to_opponents'].append(f"{card2.name}({card2.element})")
+                battle_stats[card2.name]['lost_to_opponents'].append(f"{card1.name}({card1.element})")
+            elif (c1.hp <= 0) or (c1.hp < c2.hp):
+                # card2 获胜
+                battle_stats[card2.name]['wins'] += 1
+                battle_stats[card2.name]['defeated_opponents'].append(f"{card1.name}({card1.element})")
+                battle_stats[card1.name]['losses'] += 1
+                battle_stats[card1.name]['lost_to_opponents'].append(f"{card2.name}({card2.element})")
+            else:
+                # card1 获胜
+                battle_stats[card1.name]['wins'] += 1
+                battle_stats[card1.name]['defeated_opponents'].append(f"{card2.name}({card2.element})")
+                battle_stats[card2.name]['losses'] += 1
+                battle_stats[card2.name]['lost_to_opponents'].append(f"{card1.name}({card1.element})")
+    
+    # 显示混战结果
+    print("\n混战结果统计:")
+    print("=" * 50)
+    
+    # 按胜场数排序
+    sorted_stats = sorted(battle_stats.items(), key=lambda x: x[1]['wins'], reverse=True)
+    
+    for card_name, stats in sorted_stats:
+        print(f"\n卡牌: {card_name}")
+        print(f"胜场: {stats['wins']} | 败场: {stats['losses']}")
+        
+        print("\n战胜的对手:")
+        if stats['defeated_opponents']:
+            for opponent in stats['defeated_opponents']:
+                print(f"- {opponent}")
+        else:
+            print("- 无")
+        
+        print("\n战败的对手:")
+        if stats['lost_to_opponents']:
+            for opponent in stats['lost_to_opponents']:
+                print(f"- {opponent}")
+        else:
+            print("- 无")
+        
+        print("-" * 50)
 
 def main():
     manager = CardManager()
@@ -348,6 +457,7 @@ def main():
         print("7. 列出所有卡牌")
         print("8. 查看属性克制表")
         print("9. 模拟对战")
+        print("10. 模拟混战")
         print("0. 退出")
 
         choice = input("请选择操作: ")
