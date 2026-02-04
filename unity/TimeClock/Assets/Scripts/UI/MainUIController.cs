@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 using PomodoroTimer.Core;
 using PomodoroTimer.Data;
 using PomodoroTimer.Utils;
@@ -15,6 +16,8 @@ namespace PomodoroTimer.UI
     /// </summary>
     public class MainUIController : MonoBehaviour
     {
+        public static MainUIController Instance { get; private set; }
+
         [Header("计时器显示")]
         [SerializeField] private TextMeshProUGUI timerText;
         [SerializeField] private TextMeshProUGUI stateText;
@@ -22,12 +25,12 @@ namespace PomodoroTimer.UI
         [SerializeField] private TextMeshProUGUI modeText;
         [SerializeField] private TextMeshProUGUI currentTaskText;
         [SerializeField] private Image timerBackground;
-        
+
         [Header("代币显示")]
         [SerializeField] private TextMeshProUGUI coinText;
         [SerializeField] private GameObject coinEarnedPopup;      // 获得代币的弹窗（可选）
         [SerializeField] private TextMeshProUGUI coinEarnedText;  // 弹窗文本（可选）
-        
+
         [Header("控制按钮")]
         [SerializeField] private Button startCountdownButton;
         [SerializeField] private Button startCountupButton;
@@ -35,23 +38,44 @@ namespace PomodoroTimer.UI
         [SerializeField] private Button resumeButton;
         [SerializeField] private Button stopButton;
         [SerializeField] private Button skipButton;
-        
+
         [Header("导航按钮")]
         [SerializeField] private Button settingsButton;
         [SerializeField] private Button statisticsButton;
         [SerializeField] private Toggle topMostToggle;
-        
+
         [Header("面板引用")]
         [SerializeField] private GameObject settingsPanel;
         [SerializeField] private GameObject statisticsPanel;
         [SerializeField] private TaskListUI taskListUI;
-        
+
+        [Header("全局提示")]
+        [SerializeField] private GameObject globalHintContainer;
+        [SerializeField] private TextMeshProUGUI globalHintText;
+        [SerializeField] private CanvasGroup globalHintCanvasGroup;
+
         private PomodoroTimerCore timer;
         private bool isInitialized = false;
         private int lastDisplayedCoins = 0;
+        private Coroutine hintCoroutine;
         
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
+
         private void Start()
         {
+            // 初始化全局提示
+            InitializeGlobalHint();
+
             // 延迟初始化以确保计时器已创建
             StartCoroutine(DelayedInitialize());
         }
@@ -317,14 +341,14 @@ namespace PomodoroTimer.UI
             yield return new WaitForSeconds(delay);
             coinEarnedPopup?.SetActive(false);
         }
-        
+
         /// <summary>
         /// 更新代币显示
         /// </summary>
         private void UpdateCoinDisplay()
         {
             if (coinText == null) return;
-            
+
             int totalCoins = 0;
             if (StatisticsManager.Instance != null)
             {
@@ -334,11 +358,75 @@ namespace PomodoroTimer.UI
                     totalCoins = stats.totalCoins;
                 }
             }
-            
+
             coinText.text = $"🪙 {totalCoins}";
             lastDisplayedCoins = totalCoins;
         }
-        
+
+        #endregion
+
+        #region 全局提示系统
+
+        /// <summary>
+        /// 初始化全局提示
+        /// </summary>
+        private void InitializeGlobalHint()
+        {
+            if (globalHintCanvasGroup != null)
+            {
+                globalHintCanvasGroup.alpha = 0;
+            }
+
+            if (globalHintContainer != null)
+            {
+                globalHintContainer.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// 显示全局提示信息（3秒后淡出）
+        /// </summary>
+        public void ShowGlobalHint(string message)
+        {
+            if (globalHintText == null || globalHintCanvasGroup == null || globalHintContainer == null)
+            {
+                Debug.LogWarning("[MainUIController] 全局提示组件未设置，请在Inspector中绑定GlobalHintContainer、GlobalHintText和GlobalHintCanvasGroup");
+                return;
+            }
+
+            if (hintCoroutine != null)
+            {
+                StopCoroutine(hintCoroutine);
+            }
+
+            hintCoroutine = StartCoroutine(ShowGlobalHintCoroutine(message));
+        }
+
+        private IEnumerator ShowGlobalHintCoroutine(string message)
+        {
+            globalHintContainer.SetActive(true);
+            globalHintText.text = message;
+            globalHintCanvasGroup.alpha = 1f;
+
+            // 显示3秒
+            yield return new WaitForSeconds(3f);
+
+            // 淡出效果（0.5秒）
+            float fadeTime = 0.5f;
+            float elapsed = 0f;
+
+            while (elapsed < fadeTime)
+            {
+                elapsed += Time.deltaTime;
+                globalHintCanvasGroup.alpha = 1f - (elapsed / fadeTime);
+                yield return null;
+            }
+
+            globalHintCanvasGroup.alpha = 0f;
+            globalHintContainer.SetActive(false);
+            hintCoroutine = null;
+        }
+
         #endregion
         
         #region UI更新方法

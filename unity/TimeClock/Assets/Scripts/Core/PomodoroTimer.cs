@@ -421,23 +421,37 @@ namespace PomodoroTimer.Core
         private void MoveToNextFocus()
         {
             var settings = DataManager.Instance.Settings;
-            
+
+            // 如果刚完成长休息，说明一个完整周期结束
             if (currentType == PomodoroType.LongBreak)
             {
+                // 重置轮次，准备下一个周期
                 currentRound = 1;
+                currentType = PomodoroType.Focus;
+                currentMode = TimerMode.Countdown;
+                SetTargetTime();
+
+                OnRoundChanged?.Invoke(currentRound);
+                OnTypeChanged?.Invoke(currentType);
+
+                // 长休息后不自动开始，让用户决定是否继续
+                OnTimerTick?.Invoke(targetSeconds, targetSeconds);
+                return;
             }
-            else if (currentType == PomodoroType.ShortBreak)
+
+            // 短休息结束，进入下一轮
+            if (currentType == PomodoroType.ShortBreak)
             {
                 currentRound++;
             }
-            
+
             currentType = PomodoroType.Focus;
             currentMode = TimerMode.Countdown;
             SetTargetTime();
-            
+
             OnRoundChanged?.Invoke(currentRound);
             OnTypeChanged?.Invoke(currentType);
-            
+
             if (settings.autoStartFocus && currentTask != null)
             {
                 StartTimer();
