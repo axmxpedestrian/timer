@@ -5,6 +5,7 @@ using System.Collections;
 using PomodoroTimer.Core;
 using PomodoroTimer.Data;
 using PomodoroTimer.Utils;
+using PomodoroTimer.Resource;
 
 // 解决命名空间冲突：为计时器类创建别名
 using PomodoroTimerCore = PomodoroTimer.Core.PomodoroTimer;
@@ -42,12 +43,25 @@ namespace PomodoroTimer.UI
         [Header("导航按钮")]
         [SerializeField] private Button settingsButton;
         [SerializeField] private Button statisticsButton;
-        [SerializeField] private Toggle topMostToggle;
+
+        [Header("一键隐藏UI")]
+        [SerializeField] private Button hideUIButton;
+        [SerializeField] private Image hideUIButtonImage;
+        [SerializeField] private Sprite showUISprite;      // 显示UI时的图标
+        [SerializeField] private Sprite hideUISprite;      // 隐藏UI时的图标
+        [SerializeField] private GameObject header;
+        [SerializeField] private GameObject timerSection;
+        [SerializeField] private GameObject controlButtons;
+        [SerializeField] private GameObject taskSection;
+        [SerializeField] private GameObject coinDisplay;
 
         [Header("面板引用")]
         [SerializeField] private GameObject settingsPanel;
         [SerializeField] private GameObject statisticsPanel;
         [SerializeField] private TaskListUI taskListUI;
+
+        [Header("可拖动面板")]
+        [SerializeField] private DraggablePanel timerDraggablePanel;  // TimerBackground上的拖动组件
 
         [Header("全局提示")]
         [SerializeField] private GameObject globalHintContainer;
@@ -58,6 +72,9 @@ namespace PomodoroTimer.UI
         private bool isInitialized = false;
         private int lastDisplayedCoins = 0;
         private Coroutine hintCoroutine;
+
+        // 隐藏UI状态：0=全部显示, 1=部分隐藏(只显示时间), 2=全部隐藏
+        private int hideUIState = 0;
         
         private void Awake()
         {
@@ -71,13 +88,41 @@ namespace PomodoroTimer.UI
             }
         }
 
+        private void Update()
+        {
+            // 当UI完全隐藏时，检测鼠标点击以恢复显示
+            if (hideUIState >= 2 && Input.GetMouseButtonDown(0))
+            {
+                ShowAllUI();
+            }
+        }
+
         private void Start()
         {
             // 初始化全局提示
             InitializeGlobalHint();
 
+            // 重置可拖动面板到默认位置
+            ResetDraggablePanels();
+
             // 延迟初始化以确保计时器已创建
             StartCoroutine(DelayedInitialize());
+        }
+
+        /// <summary>
+        /// 重置所有可拖动面板到默认位置
+        /// </summary>
+        private void ResetDraggablePanels()
+        {
+            if (timerDraggablePanel != null)
+            {
+                timerDraggablePanel.ResetToDefaultPosition();
+            }
+
+            if (taskListUI != null)
+            {
+                taskListUI.ResetToDefaultPosition();
+            }
         }
         
         private System.Collections.IEnumerator DelayedInitialize()
@@ -149,11 +194,11 @@ namespace PomodoroTimer.UI
             resumeButton?.onClick.AddListener(OnResumeClicked);
             stopButton?.onClick.AddListener(OnStopClicked);
             skipButton?.onClick.AddListener(OnSkipClicked);
-            
+
             settingsButton?.onClick.AddListener(OnSettingsClicked);
             statisticsButton?.onClick.AddListener(OnStatisticsClicked);
-            
-            topMostToggle?.onValueChanged.AddListener(OnTopMostToggled);
+
+            hideUIButton?.onClick.AddListener(OnHideUIClicked);
         }
         
         /// <summary>
@@ -235,43 +280,105 @@ namespace PomodoroTimer.UI
             AudioManager.Instance?.PlayClick();
             statisticsPanel?.SetActive(true);
         }
-        
-        private void OnTopMostToggled(bool isOn)
+
+        private void OnHideUIClicked()
         {
-            // 设置窗口置顶
-            #if UNITY_STANDALONE_WIN && !UNITY_EDITOR
-            // Windows平台置顶实现
-            SetWindowTopMost(isOn);
-            #endif
-            
-            if (DataManager.Instance != null)
+            AudioManager.Instance?.PlayClick();
+            hideUIState++;
+
+            if (hideUIState == 1)
             {
-                DataManager.Instance.Settings.topMost = isOn;
-                DataManager.Instance.Save();
+                // 第一次点击：隐藏除TimerText以外的UI
+                SetUIVisibility(false, true);
+                UpdateHideUIButtonIcon(true);
+            }
+            else if (hideUIState >= 2)
+            {
+                // 第二次点击：隐藏所有UI（包括按钮本身）
+                SetUIVisibility(false, false);
+                hideUIButton?.gameObject.SetActive(false);
             }
         }
-        
-        #if UNITY_STANDALONE_WIN
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        private static extern System.IntPtr GetActiveWindow();
-        
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        private static extern bool SetWindowPos(System.IntPtr hWnd, System.IntPtr hWndInsertAfter, 
-            int X, int Y, int cx, int cy, uint uFlags);
-        
-        private static readonly System.IntPtr HWND_TOPMOST = new System.IntPtr(-1);
-        private static readonly System.IntPtr HWND_NOTOPMOST = new System.IntPtr(-2);
-        private const uint SWP_NOMOVE = 0x0002;
-        private const uint SWP_NOSIZE = 0x0001;
-        
-        private void SetWindowTopMost(bool topMost)
+
+        /// <summary>
+        /// 设置UI可见性
+        /// </summary>
+        /// <param name="visible">是否可见</param>
+        /// <param name="keepTimerText">是否保留计时器文本</param>
+        private void SetUIVisibility(bool visible, bool keepTimerText)
         {
-            var handle = GetActiveWindow();
-            SetWindowPos(handle, topMost ? HWND_TOPMOST : HWND_NOTOPMOST, 
-                0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+            header?.SetActive(visible);
+            controlButtons?.SetActive(visible);
+            taskSection?.SetActive(visible);
+            coinDisplay?.SetActive(visible);
+
+            if (timerSection != null)
+            {
+                if (visible)
+                {
+                    // 显示所有
+                    timerSection.SetActive(true);
+                    SetTimerSectionChildrenVisibility(true);
+                }
+                else if (keepTimerText)
+                {
+                    // 只显示TimerText
+                    timerSection.SetActive(true);
+                    SetTimerSectionChildrenVisibility(false);
+                }
+                else
+                {
+                    // 全部隐藏
+                    timerSection.SetActive(false);
+                }
+            }
         }
-        #endif
-        
+
+        /// <summary>
+        /// 设置TimerSection子对象可见性（除TimerText外）
+        /// </summary>
+        private void SetTimerSectionChildrenVisibility(bool visible)
+        {
+            if (timerSection == null) return;
+
+            foreach (Transform child in timerSection.transform)
+            {
+                // TimerText保持显示
+                if (child.name == "TimerText" || child.GetComponent<TextMeshProUGUI>() == timerText)
+                {
+                    child.gameObject.SetActive(true);
+                }
+                else
+                {
+                    child.gameObject.SetActive(visible);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 更新隐藏按钮图标
+        /// </summary>
+        private void UpdateHideUIButtonIcon(bool isHidden)
+        {
+            if (hideUIButtonImage != null)
+            {
+                hideUIButtonImage.sprite = isHidden ? showUISprite : hideUISprite;
+            }
+        }
+
+        /// <summary>
+        /// 显示所有UI（鼠标点击时调用）
+        /// </summary>
+        public void ShowAllUI()
+        {
+            if (hideUIState == 0) return;
+
+            hideUIState = 0;
+            SetUIVisibility(true, true);
+            hideUIButton?.gameObject.SetActive(true);
+            UpdateHideUIButtonIcon(false);
+        }
+
         #endregion
         
         #region 计时器事件处理
@@ -300,15 +407,15 @@ namespace PomodoroTimer.UI
         
         private void OnPomodoroCompleted(PomodoroRecord record)
         {
-            // 计算获得的代币
+            // 计算获得的代币（使用CoinCalculator）
             float minutes = record.durationSeconds / 60f;
-            int earnedCoins = StatisticsData.CalculateCoins(minutes);
-            
+            int earnedCoins = CoinCalculator.CalculateCoins(minutes);
+
             Debug.Log($"番茄钟完成: {record.GetFormattedDuration()}, 获得 {earnedCoins} 代币");
-            
+
             // 更新代币显示
             UpdateCoinDisplay();
-            
+
             // 显示获得代币的弹窗
             if (earnedCoins > 0)
             {
@@ -349,8 +456,15 @@ namespace PomodoroTimer.UI
         {
             if (coinText == null) return;
 
-            int totalCoins = 0;
-            if (StatisticsManager.Instance != null)
+            long totalCoins = 0;
+
+            // 优先从ResourceManager获取
+            if (ResourceManager.Instance != null)
+            {
+                totalCoins = ResourceManager.Instance.GetAmount(ResourceType.Coin);
+            }
+            // 备用：从StatisticsManager获取
+            else if (StatisticsManager.Instance != null)
             {
                 var stats = StatisticsManager.Instance.GetOverallStatistics();
                 if (stats != null)
@@ -359,8 +473,8 @@ namespace PomodoroTimer.UI
                 }
             }
 
-            coinText.text = $"🪙 {totalCoins}";
-            lastDisplayedCoins = totalCoins;
+            coinText.text = $"🪙 {ResourceDefinition.FormatAmount(totalCoins)}";
+            lastDisplayedCoins = (int)totalCoins;
         }
 
         #endregion
@@ -437,21 +551,24 @@ namespace PomodoroTimer.UI
         private void UpdateUIState()
         {
             if (timer == null) return;
-            
+
             var state = timer.CurrentState;
-            
+            var mode = timer.CurrentMode;
+
             // 更新按钮可见性
             bool isIdle = state == TimerState.Idle;
             bool isRunning = state == TimerState.Running;
             bool isPaused = state == TimerState.Paused;
-            
+            bool isCountdown = mode == TimerMode.Countdown;
+
             startCountdownButton?.gameObject.SetActive(isIdle);
             startCountupButton?.gameObject.SetActive(isIdle);
             pauseButton?.gameObject.SetActive(isRunning);
             resumeButton?.gameObject.SetActive(isPaused);
             stopButton?.gameObject.SetActive(!isIdle);
-            skipButton?.gameObject.SetActive(!isIdle);
-            
+            // 跳过按钮只在倒计时模式下显示（正计时模式不显示）
+            skipButton?.gameObject.SetActive(!isIdle && isCountdown);
+
             // 更新显示
             UpdateTimerDisplay();
             UpdateStateDisplay();

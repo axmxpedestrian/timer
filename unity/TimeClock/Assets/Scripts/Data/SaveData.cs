@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using PomodoroTimer.Resource;
 
 namespace PomodoroTimer.Data
 {
@@ -11,23 +12,29 @@ namespace PomodoroTimer.Data
     public class SaveData
     {
         // 版本号，用于未来的数据迁移
-        public int version = 1;
-        
+        public int version = 2;
+
         // 任务列表
         public List<TaskData> tasks = new List<TaskData>();
-        
+
         // 番茄钟记录历史
         public List<PomodoroRecord> pomodoroRecords = new List<PomodoroRecord>();
-        
+
         // 设置
         public SettingsData settings = new SettingsData();
-        
+
         // 当前状态(用于恢复中断的会话)
         public SessionData currentSession = new SessionData();
-        
+
         // 统计数据
         public StatisticsData statistics = new StatisticsData();
-        
+
+        // 资源数据
+        public ResourceSaveData resourceData = new ResourceSaveData();
+
+        // 建筑生产器数据
+        public List<BuildingProducerSaveData> buildingProducers = new List<BuildingProducerSaveData>();
+
         // 最后保存时间
         public string lastSaveTime;
         
@@ -62,6 +69,8 @@ namespace PomodoroTimer.Data
         public bool autoStartBreak = false;         // 专注结束后自动开始休息
         public bool autoStartFocus = false;         // 休息结束后自动开始专注
         public bool topMost = false;                // 窗口置顶
+        public bool fullScreen = false;             // 全屏模式
+        public float mapZoomSpeed = 2f;             // 地图滚轮缩放速度
     }
     
     /// <summary>
@@ -116,7 +125,7 @@ namespace PomodoroTimer.Data
         public int longestStreak = 0;               // 最长连续天数
         public string lastActiveDate;               // 最后活跃日期
         public int totalCoins = 0;                  // 总代币数量
-        
+
         /// <summary>
         /// 添加完成的番茄钟
         /// </summary>
@@ -124,13 +133,19 @@ namespace PomodoroTimer.Data
         {
             totalPomodorosCompleted++;
             totalFocusTimeSeconds += focusTimeSeconds;
-            
-            // 计算并添加代币
-            int earnedCoins = CalculateCoins(focusTimeSeconds / 60f);
+
+            // 计算并添加代币（使用CoinCalculator）
+            int earnedCoins = CoinCalculator.CalculateCoinsFromSeconds(focusTimeSeconds);
             totalCoins += earnedCoins;
-            
+
+            // 同步到ResourceManager
+            if (ResourceManager.Instance != null)
+            {
+                ResourceManager.Instance.AddCoinsFromPomodoro(earnedCoins);
+            }
+
             string today = DateTime.Now.ToString("yyyy-MM-dd");
-            
+
             if (lastActiveDate != today)
             {
                 // 检查是否连续
@@ -150,31 +165,22 @@ namespace PomodoroTimer.Data
                 {
                     currentStreak = 1;
                 }
-                
+
                 if (currentStreak > longestStreak)
                     longestStreak = currentStreak;
-                    
+
                 lastActiveDate = today;
             }
         }
-        
+
         /// <summary>
-        /// 计算代币数量
-        /// 公式: y = 0.5 * (x - 4), 10 ≤ x ≤ 120; y = 60, x ≥ 120
+        /// 计算代币数量（保留用于兼容）
         /// </summary>
         public static int CalculateCoins(float minutes)
         {
-            if (minutes < 10)
-                return 0;
-            
-            if (minutes >= 120)
-                return 60;
-            
-            // y = 0.5 * (x - 4)
-            float coins = 0.5f * (minutes - 4);
-            return Mathf.RoundToInt(coins);
+            return CoinCalculator.CalculateCoins(minutes);
         }
-        
+
         /// <summary>
         /// 获取格式化的总时间
         /// </summary>

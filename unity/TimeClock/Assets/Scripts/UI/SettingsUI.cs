@@ -50,10 +50,21 @@ namespace PomodoroTimer.UI
         [SerializeField] private Button resetDefaultButton;
         [SerializeField] private Button clearHistoryButton;
 
+        [Header("共享按钮行")]
+        [SerializeField] private GameObject buttonsRow;
+
         [Header("声音设置")]
         [SerializeField] private Toggle soundToggle;
         [SerializeField] private Slider volumeSlider;
         [SerializeField] private Button previewSoundButton;
+
+        [Header("画面设置")]
+        [SerializeField] private Toggle fullScreenToggle;
+        [SerializeField] private Toggle topMostToggle;
+
+        [Header("游戏设置")]
+        [SerializeField] private Slider mapZoomSpeedSlider;
+        [SerializeField] private TextMeshProUGUI mapZoomSpeedValueText;
 
         [Header("通用按钮")]
         [SerializeField] private Button closeButton;
@@ -90,6 +101,8 @@ namespace PomodoroTimer.UI
             LoadCurrentSettings();
             // 默认显示番茄钟分页
             SwitchToTab(1);
+            // 确保清除历史按钮状态正确
+            UpdateClearHistoryButtonVisibility();
         }
 
         private void Start()
@@ -147,6 +160,23 @@ namespace PomodoroTimer.UI
 
             // 更新分页按钮样式
             UpdateTabButtonStyles();
+
+            // 更新清除历史按钮显示状态（只在番茄钟分页显示）
+            UpdateClearHistoryButtonVisibility();
+        }
+
+        /// <summary>
+        /// 更新清除历史按钮的显示状态
+        /// </summary>
+        private void UpdateClearHistoryButtonVisibility()
+        {
+            if (clearHistoryButton != null)
+            {
+                // 只在番茄钟分页（index 1）显示清除历史按钮
+                bool showClearHistory = (currentTabIndex == 1);
+                clearHistoryButton.gameObject.SetActive(showClearHistory);
+                clearHistoryButton.interactable = showClearHistory;
+            }
         }
 
         /// <summary>
@@ -188,6 +218,9 @@ namespace PomodoroTimer.UI
 
             // 实时更新音量
             volumeSlider?.onValueChanged.AddListener(OnVolumeChanged);
+
+            // 实时更新缩放速度显示
+            mapZoomSpeedSlider?.onValueChanged.AddListener(OnZoomSpeedChanged);
         }
 
         /// <summary>
@@ -210,7 +243,8 @@ namespace PomodoroTimer.UI
                 soundEnabled = settings.soundEnabled,
                 soundVolume = settings.soundVolume,
                 autoStartBreak = settings.autoStartBreak,
-                autoStartFocus = settings.autoStartFocus
+                autoStartFocus = settings.autoStartFocus,
+                mapZoomSpeed = settings.mapZoomSpeed
             };
 
             // 填充UI
@@ -221,10 +255,21 @@ namespace PomodoroTimer.UI
             SetInputValue(countupMinInput, settings.countupMinThreshold);
             SetInputValue(countupMaxInput, settings.countupMaxMinutes);
 
+            // 游戏设置
+            if (mapZoomSpeedSlider != null)
+            {
+                mapZoomSpeedSlider.minValue = 0.5f;
+                mapZoomSpeedSlider.maxValue = 5f;
+                mapZoomSpeedSlider.value = settings.mapZoomSpeed;
+                UpdateZoomSpeedValueText(settings.mapZoomSpeed);
+            }
+
             if (soundToggle != null) soundToggle.isOn = settings.soundEnabled;
             if (volumeSlider != null) volumeSlider.value = settings.soundVolume;
             if (autoStartBreakToggle != null) autoStartBreakToggle.isOn = settings.autoStartBreak;
             if (autoStartFocusToggle != null) autoStartFocusToggle.isOn = settings.autoStartFocus;
+            if (fullScreenToggle != null) fullScreenToggle.isOn = settings.fullScreen;
+            if (topMostToggle != null) topMostToggle.isOn = settings.topMost;
 
             // 更新存档信息
             UpdateSaveInfo();
@@ -316,6 +361,58 @@ namespace PomodoroTimer.UI
             }
         }
 
+        /// <summary>
+        /// 应用全屏设置
+        /// </summary>
+        private void ApplyFullScreenSetting(bool fullScreen)
+        {
+            if (fullScreen)
+            {
+                // 切换到全屏模式
+                Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+                Screen.fullScreen = true;
+            }
+            else
+            {
+                // 切换到窗口模式
+                Screen.fullScreenMode = FullScreenMode.Windowed;
+                Screen.fullScreen = false;
+            }
+            Debug.Log($"[SettingsUI] 全屏模式: {fullScreen}");
+        }
+
+        /// <summary>
+        /// 应用窗口置顶设置
+        /// </summary>
+        private void ApplyTopMostSetting(bool topMost)
+        {
+#if UNITY_STANDALONE_WIN && !UNITY_EDITOR
+            SetWindowTopMost(topMost);
+#endif
+            Debug.Log($"[SettingsUI] 窗口置顶: {topMost}");
+        }
+
+#if UNITY_STANDALONE_WIN
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern System.IntPtr GetActiveWindow();
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool SetWindowPos(System.IntPtr hWnd, System.IntPtr hWndInsertAfter,
+            int X, int Y, int cx, int cy, uint uFlags);
+
+        private static readonly System.IntPtr HWND_TOPMOST = new System.IntPtr(-1);
+        private static readonly System.IntPtr HWND_NOTOPMOST = new System.IntPtr(-2);
+        private const uint SWP_NOMOVE = 0x0002;
+        private const uint SWP_NOSIZE = 0x0001;
+
+        private void SetWindowTopMost(bool topMost)
+        {
+            var handle = GetActiveWindow();
+            SetWindowPos(handle, topMost ? HWND_TOPMOST : HWND_NOTOPMOST,
+                0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+        }
+#endif
+
         #region 按钮事件
 
         private void OnCloseClicked()
@@ -392,6 +489,26 @@ namespace PomodoroTimer.UI
             currentSettings.autoStartBreak = autoStartBreakToggle?.isOn ?? false;
             currentSettings.autoStartFocus = autoStartFocusToggle?.isOn ?? false;
 
+            // 画面设置
+            bool newFullScreen = fullScreenToggle?.isOn ?? false;
+            if (newFullScreen != currentSettings.fullScreen)
+            {
+                currentSettings.fullScreen = newFullScreen;
+                ApplyFullScreenSetting(newFullScreen);
+            }
+
+            // 窗口置顶设置
+            bool newTopMost = topMostToggle?.isOn ?? false;
+            if (newTopMost != currentSettings.topMost)
+            {
+                currentSettings.topMost = newTopMost;
+                ApplyTopMostSetting(newTopMost);
+            }
+
+            // 游戏设置 - 地图缩放速度
+            float newMapZoomSpeed = mapZoomSpeedSlider?.value ?? 2f;
+            currentSettings.mapZoomSpeed = newMapZoomSpeed;
+
             // 保存设置
             DataManager.Instance.Save();
 
@@ -426,10 +543,21 @@ namespace PomodoroTimer.UI
             SetInputValue(countupMinInput, 10);
             SetInputValue(countupMaxInput, 120);
 
+            // 游戏设置
+            if (mapZoomSpeedSlider != null)
+            {
+                mapZoomSpeedSlider.minValue = 0.5f;
+                mapZoomSpeedSlider.maxValue = 5f;
+                mapZoomSpeedSlider.value = 2f;
+                UpdateZoomSpeedValueText(2f);
+            }
+
             if (soundToggle != null) soundToggle.isOn = true;
             if (volumeSlider != null) volumeSlider.value = 0.8f;
             if (autoStartBreakToggle != null) autoStartBreakToggle.isOn = false;
             if (autoStartFocusToggle != null) autoStartFocusToggle.isOn = false;
+            if (fullScreenToggle != null) fullScreenToggle.isOn = false;
+            if (topMostToggle != null) topMostToggle.isOn = false;
         }
 
         private void OnClearHistoryClicked()
@@ -462,6 +590,19 @@ namespace PomodoroTimer.UI
         private void OnVolumeChanged(float value)
         {
             AudioManager.Instance?.SetVolume(value);
+        }
+
+        private void OnZoomSpeedChanged(float value)
+        {
+            UpdateZoomSpeedValueText(value);
+        }
+
+        private void UpdateZoomSpeedValueText(float value)
+        {
+            if (mapZoomSpeedValueText != null)
+            {
+                mapZoomSpeedValueText.text = value.ToString("F1");
+            }
         }
 
         #endregion

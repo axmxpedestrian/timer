@@ -20,20 +20,30 @@ namespace PomodoroTimer.UI
         [SerializeField] private GameObject taskItemPrefab;
         [SerializeField] private Button addTaskButton;
         [SerializeField] private GameObject taskEditPanel;
-        
+
         [Header("编辑面板")]
         [SerializeField] private TMP_InputField taskNameInput;
         [SerializeField] private Button[] colorButtons;  // 6个颜色按钮
         [SerializeField] private Button saveTaskButton;
         [SerializeField] private Button deleteTaskButton;
         [SerializeField] private Button cancelEditButton;
-        
+
+        [Header("最小化功能")]
+        [SerializeField] private Button minimizeButton;           // 最小化按钮（在TaskListHeader中）
+        [SerializeField] private GameObject taskListPanel;        // 任务列表主面板（需要隐藏的部分）
+        [SerializeField] private GameObject minimizedTab;         // 最小化后显示的标签（在右侧）
+        [SerializeField] private Button restoreButton;            // 恢复按钮（在minimizedTab中）
+
+        [Header("可拖动功能")]
+        [SerializeField] private DraggablePanel draggablePanel;   // 拖动组件（在TaskListHeader上）
+
         [Header("主界面引用")]
         [SerializeField] private MainUIController mainUI;
-        
+
         [Header("调试")]
         [SerializeField] private bool enableDebugLog = false;
-        
+
+        private bool isMinimized = false;
         private Dictionary<string, TaskItemUI> taskItemMap = new Dictionary<string, TaskItemUI>();
         private TaskData editingTask;
         private int selectedColorIndex = 0;
@@ -52,9 +62,37 @@ namespace PomodoroTimer.UI
         private void Start()
         {
             BindEvents();
-            
+
+            // 初始化最小化状态
+            InitializeMinimizeState();
+
             // 延迟初始化以确保数据管理器已加载
             StartCoroutine(DelayedInitialize());
+        }
+
+        /// <summary>
+        /// 初始化最小化状态
+        /// </summary>
+        private void InitializeMinimizeState()
+        {
+            // 确保初始状态正确
+            isMinimized = false;
+
+            if (taskListPanel != null)
+            {
+                taskListPanel.SetActive(true);
+            }
+
+            if (minimizedTab != null)
+            {
+                minimizedTab.SetActive(false);
+            }
+
+            // 重置拖动面板到默认位置
+            if (draggablePanel != null)
+            {
+                draggablePanel.ResetToDefaultPosition();
+            }
         }
         
         private System.Collections.IEnumerator DelayedInitialize()
@@ -90,20 +128,24 @@ namespace PomodoroTimer.UI
             saveTaskButton?.onClick.AddListener(OnSaveTaskClicked);
             deleteTaskButton?.onClick.AddListener(OnDeleteTaskClicked);
             cancelEditButton?.onClick.AddListener(OnCancelEditClicked);
-            
+
+            // 绑定最小化/恢复按钮
+            minimizeButton?.onClick.AddListener(OnMinimizeClicked);
+            restoreButton?.onClick.AddListener(OnRestoreClicked);
+
             // 绑定颜色按钮
             for (int i = 0; i < colorButtons.Length; i++)
             {
                 int index = i;
                 colorButtons[i]?.onClick.AddListener(() => OnColorSelected(index));
             }
-            
+
             // 订阅数据管理器事件
             if (DataManager.Instance != null)
             {
                 DataManager.Instance.OnDataLoaded += OnDataLoaded;
             }
-            
+
             // 订阅任务管理器事件
             if (TaskManager.Instance != null)
             {
@@ -353,7 +395,69 @@ namespace PomodoroTimer.UI
         {
             taskEditPanel?.SetActive(false);
         }
-        
+
+        /// <summary>
+        /// 最小化按钮点击
+        /// </summary>
+        private void OnMinimizeClicked()
+        {
+            Log("点击最小化按钮");
+            SetMinimized(true);
+        }
+
+        /// <summary>
+        /// 恢复按钮点击
+        /// </summary>
+        private void OnRestoreClicked()
+        {
+            Log("点击恢复按钮");
+            SetMinimized(false);
+        }
+
+        /// <summary>
+        /// 设置最小化状态
+        /// </summary>
+        public void SetMinimized(bool minimized)
+        {
+            isMinimized = minimized;
+
+            if (taskListPanel != null)
+            {
+                taskListPanel.SetActive(!minimized);
+            }
+
+            if (minimizedTab != null)
+            {
+                minimizedTab.SetActive(minimized);
+            }
+
+            Log($"任务列表最小化状态: {minimized}");
+        }
+
+        /// <summary>
+        /// 获取当前是否最小化
+        /// </summary>
+        public bool IsMinimized => isMinimized;
+
+        /// <summary>
+        /// 切换最小化状态
+        /// </summary>
+        public void ToggleMinimized()
+        {
+            SetMinimized(!isMinimized);
+        }
+
+        /// <summary>
+        /// 重置面板到默认位置
+        /// </summary>
+        public void ResetToDefaultPosition()
+        {
+            if (draggablePanel != null)
+            {
+                draggablePanel.ResetToDefaultPosition();
+            }
+        }
+
         private void OnColorSelected(int index)
         {
             selectedColorIndex = index;
@@ -363,21 +467,35 @@ namespace PomodoroTimer.UI
         #endregion
         
         #region 任务项回调
-        
+
         /// <summary>
         /// 任务项被选中(绑定到计时器)
         /// </summary>
         private void OnTaskItemSelected(TaskData task)
         {
             Log($" 点击任务: {task.taskName}, 当前选中: {currentSelectedTaskId ?? "无"}");
-            
+
+            // 【新增】检查计时器是否正在运行，如果正在运行则不允许切换任务
+            var timer = PomodoroTimerCore.Instance;
+            if (timer != null && timer.CurrentState != TimerState.Idle)
+            {
+                Log(" 计时器正在运行中，不允许切换任务");
+
+                // 显示提示
+                ConfirmDialog.Instance?.ShowAlert(
+                    "无法切换任务",
+                    "计时器正在运行中,请先停止计时再切换任务."
+                );
+                return;
+            }
+
             // 如果点击的是已选中的任务，则取消选择
             if (currentSelectedTaskId == task.id)
             {
                 Log(" 取消选择任务");
                 currentSelectedTaskId = null;
                 mainUI?.OnTaskDeselected();
-                
+
                 // 更新所有任务项的选中状态为未选中
                 foreach (var kvp in taskItemMap)
                 {

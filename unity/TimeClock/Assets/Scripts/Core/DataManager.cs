@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using PomodoroTimer.Data;
+using PomodoroTimer.Resource;
 
 namespace PomodoroTimer.Core
 {
@@ -13,22 +14,23 @@ namespace PomodoroTimer.Core
     public class DataManager : MonoBehaviour
     {
         public static DataManager Instance { get; private set; }
-        
+
         private const string SAVE_FILE_NAME = "pomodoro_save.json";
-        
+
         // 【优化】日志控制 - 可在Inspector中调整
         [Header("日志设置")]
         [SerializeField] private bool enableVerboseLog = false;  // 详细日志开关
-        
+
         private SaveData saveData;
-        
+
         public SettingsData Settings => saveData.settings;
         public SessionData CurrentSession => saveData.currentSession;
         public StatisticsData Statistics => saveData.statistics;
-        
+        public ResourceSaveData ResourceData => saveData.resourceData;
+
         public event Action OnDataLoaded;
         public event Action OnDataSaved;
-        
+
         private string SaveFilePath => Path.Combine(Application.persistentDataPath, SAVE_FILE_NAME);
         
         private void Awake()
@@ -99,7 +101,11 @@ namespace PomodoroTimer.Core
                             saveData.currentSession = new SessionData();
                         if (saveData.statistics == null)
                             saveData.statistics = new StatisticsData();
-                        
+                        if (saveData.resourceData == null)
+                            saveData.resourceData = new ResourceSaveData();
+                        if (saveData.buildingProducers == null)
+                            saveData.buildingProducers = new List<BuildingProducerSaveData>();
+
                         // 过滤掉无效的任务
                         saveData.tasks.RemoveAll(t => t == null || !t.IsValid());
                         
@@ -124,17 +130,32 @@ namespace PomodoroTimer.Core
         private System.Collections.IEnumerator InitializeManagersDelayed()
         {
             yield return null;
-            
+
             if (TaskManager.Instance != null)
             {
                 TaskManager.Instance.Initialize(saveData.tasks);
             }
-            
+
             if (StatisticsManager.Instance != null)
             {
                 StatisticsManager.Instance.Initialize(saveData.pomodoroRecords, saveData.statistics);
             }
-            
+
+            // 初始化资源管理器
+            if (ResourceManager.Instance != null)
+            {
+                ResourceManager.Instance.Initialize(saveData.resourceData);
+
+                // 同步代币数量（从统计数据）
+                ResourceManager.Instance.SyncCoinsFromStatistics(saveData.statistics.totalCoins);
+            }
+
+            // 初始化建筑资源系统
+            if (BuildingResourceSystemManager.Instance != null)
+            {
+                BuildingResourceSystemManager.Instance.LoadFromSaveData(saveData.buildingProducers);
+            }
+
             OnDataLoaded?.Invoke();
         }
         
@@ -150,21 +171,33 @@ namespace PomodoroTimer.Core
                 {
                     saveData.tasks = new List<TaskData>(TaskManager.Instance.Tasks);
                 }
-                
+
                 // 更新记录列表引用
                 if (StatisticsManager.Instance != null)
                 {
                     saveData.pomodoroRecords = StatisticsManager.Instance.GetAllRecords();
                     saveData.statistics = Statistics;
                 }
-                
+
+                // 更新资源数据
+                if (ResourceManager.Instance != null)
+                {
+                    saveData.resourceData = ResourceManager.Instance.CreateSaveData();
+                }
+
+                // 更新建筑生产器数据
+                if (BuildingResourceSystemManager.Instance != null)
+                {
+                    saveData.buildingProducers = BuildingResourceSystemManager.Instance.CreateSaveData();
+                }
+
                 saveData.UpdateSaveTime();
-                
+
                 string json = JsonUtility.ToJson(saveData, false); // 【优化】不使用格式化，减少文件大小
                 File.WriteAllText(SaveFilePath, json);
-                
+
                 Log($"存档保存成功");
-                
+
                 OnDataSaved?.Invoke();
             }
             catch (Exception e)
@@ -205,12 +238,13 @@ namespace PomodoroTimer.Core
         public void ResetAllData()
         {
             saveData = new SaveData();
-            
+
             TaskManager.Instance?.Initialize(saveData.tasks);
             StatisticsManager.Instance?.Initialize(saveData.pomodoroRecords, saveData.statistics);
-            
+            ResourceManager.Instance?.Initialize(saveData.resourceData);
+
             Save();
-            
+
             Log("所有数据已重置");
         }
         
@@ -227,12 +261,13 @@ namespace PomodoroTimer.Core
                 if (importedData != null)
                 {
                     saveData = importedData;
-                    
+
                     TaskManager.Instance?.Initialize(saveData.tasks);
                     StatisticsManager.Instance?.Initialize(saveData.pomodoroRecords, saveData.statistics);
-                    
+                    ResourceManager.Instance?.Initialize(saveData.resourceData);
+
                     Save();
-                    
+
                     OnDataLoaded?.Invoke();
                     return true;
                 }
@@ -246,10 +281,12 @@ namespace PomodoroTimer.Core
         
         public string GetSaveInfo()
         {
+            int resourceCount = saveData.resourceData?.resourceEntries?.Count ?? 0;
             return $"最后保存: {saveData.lastSaveTime}\n" +
                    $"任务数: {saveData.tasks.Count}\n" +
                    $"记录数: {saveData.pomodoroRecords.Count}\n" +
-                   $"总番茄钟: {saveData.statistics.totalPomodorosCompleted}";
+                   $"总番茄钟: {saveData.statistics.totalPomodorosCompleted}\n" +
+                   $"资源类型: {resourceCount}";
         }
         
         public bool HasActiveSession()

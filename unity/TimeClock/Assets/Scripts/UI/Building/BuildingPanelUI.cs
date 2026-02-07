@@ -1,0 +1,621 @@
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using System.Collections.Generic;
+using PomodoroTimer.Map.Data;
+using PomodoroTimer.Map.Sprite2D;
+using PomodoroTimer.Resource;
+
+namespace PomodoroTimer.UI.Building
+{
+    /// <summary>
+    /// 建造面板UI控制器
+    /// 管理建造物选择、分类筛选、放置流程
+    /// </summary>
+    public class BuildingPanelUI : MonoBehaviour
+    {
+        public static BuildingPanelUI Instance { get; private set; }
+
+        [Header("面板控制")]
+        [SerializeField] private GameObject panelRoot;
+        [SerializeField] private RectTransform panelTransform;
+        [SerializeField] private Button toggleButton;           // 底部"放置"按钮
+        [SerializeField] private Button closeButton;            // 右上角关闭按钮
+        [SerializeField] private float slideSpeed = 800f;       // 滑动速度
+        [SerializeField] private float hiddenYOffset = -300f;   // 隐藏时的Y偏移
+
+        [Header("分类按钮")]
+        [SerializeField] private Transform categoryButtonContainer;
+        [SerializeField] private GameObject categoryButtonPrefab;
+        [SerializeField] private Color categoryNormalColor = new Color(0.3f, 0.3f, 0.3f);
+        [SerializeField] private Color categorySelectedColor = new Color(0.2f, 0.6f, 0.2f);
+
+        [Header("建造物列表")]
+        [SerializeField] private VirtualScrollView buildingScrollView;
+
+        [Header("提示信息")]
+        [SerializeField] private TextMeshProUGUI hintText;
+        [SerializeField] private GameObject rotationHint;
+
+        [Header("懒加载设置")]
+        [SerializeField] private int currentTechLevel = 0;      // 当前科技等级
+        [SerializeField] private bool loadAllOnStart = false;   // 是否启动时加载全部
+
+        // 分类按钮
+        private List<Button> categoryButtons = new List<Button>();
+        private List<Image> categoryButtonImages = new List<Image>();
+        private BuildingCategory currentCategory = BuildingCategory.All;
+
+        // 建造物数据
+        private List<BuildingItemData> allBuildingData = new List<BuildingItemData>();
+        private List<BuildingItemData> filteredBuildingData = new List<BuildingItemData>();
+        private Dictionary<int, BuildingItemData> loadedBlueprintData = new Dictionary<int, BuildingItemData>();
+
+        // 面板状态
+        private bool isPanelOpen = false;
+        private bool isAnimating = false;
+        private float targetY;
+        private float defaultY;
+
+        // 选中状态
+        private BuildingItemData selectedBuilding;
+        private bool isPlacementMode = false;
+
+        // 资源检查缓存
+        private float lastAffordableCheckTime;
+        private const float AFFORDABLE_CHECK_INTERVAL = 0.5f;
+
+        // 事件
+        public event System.Action<bool> OnPanelToggled;
+        public event System.Action<BuildingBlueprint> OnBuildingSelected;
+
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+                return;
+            }
+        }
+
+        private void Start()
+        {
+            Initialize();
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this)
+                Instance = null;
+        }
+
+        private void Update()
+        {
+            // 面板滑动动画
+            if (isAnimating)
+            {
+                UpdatePanelAnimation();
+            }
+
+            // 放置模式输入处理
+            if (isPlacementMode)
+            {
+                HandlePlacementInput();
+            }
+
+            // 定期刷新可负担状态
+            if (isPanelOpen && Time.time - lastAffordableCheckTime > AFFORDABLE_CHECK_INTERVAL)
+            {
+                RefreshAffordableState();
+                lastAffordableCheckTime = Time.time;
+            }
+        }
+
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        private void Initialize()
+        {
+            // 记录默认位置
+            if (panelTransform != null)
+            {
+                defaultY = panelTransform.anchoredPosition.y;
+                targetY = defaultY + hiddenYOffset;
+                panelTransform.anchoredPosition = new Vector2(
+                    panelTransform.anchoredPosition.x, targetY);
+            }
+
+            // 绑定按钮事件
+            if (toggleButton != null)
+            {
+                toggleButton.onClick.AddListener(TogglePanel);
+            }
+
+            if (closeButton != null)
+            {
+                closeButton.onClick.AddListener(ClosePanel);
+            }
+
+            // 创建分类按钮
+            CreateCategoryButtons();
+
+            // 加载建造物数据
+            if (loadAllOnStart)
+            {
+                LoadAllBuildingData();
+            }
+            else
+            {
+                LoadBuildingDataByTechLevel(currentTechLevel);
+            }
+
+            // 初始隐藏面板
+            if (panelRoot != null)
+            {
+                panelRoot.SetActive(true);
+            }
+
+            // 隐藏提示
+            if (rotationHint != null)
+            {
+                rotationHint.SetActive(false);
+            }
+
+            UpdateHintText("点击建造物开始放置");
+        }
+
+        #region 分类按钮
+
+        /// <summary>
+        /// 创建分类按钮
+        /// </summary>
+        private void CreateCategoryButtons()
+        {
+            if (categoryButtonContainer == null || categoryButtonPrefab == null) return;
+
+            // 定义要显示的分类
+            BuildingCategory[] categories = new BuildingCategory[]
+            {
+                BuildingCategory.All,
+                BuildingCategory.Residential,
+                BuildingCategory.Road,
+                BuildingCategory.Nature,
+                BuildingCategory.Facility,
+                BuildingCategory.Structure
+            };
+
+            string[] categoryNames = new string[]
+            {
+                "全部", "建筑", "道路", "自然", "设施", "结构"
+            };
+
+            for (int i = 0; i < categories.Length; i++)
+            {
+                var btnObj = Instantiate(categoryButtonPrefab, categoryButtonContainer);
+                var btn = btnObj.GetComponent<Button>();
+                var img = btnObj.GetComponent<Image>();
+                var text = btnObj.GetComponentInChildren<TextMeshProUGUI>();
+
+                if (text != null)
+                {
+                    text.text = categoryNames[i];
+                }
+
+                int index = i;
+                BuildingCategory cat = categories[i];
+
+                if (btn != null)
+                {
+                    btn.onClick.AddListener(() => OnCategoryClicked(cat, index));
+                    categoryButtons.Add(btn);
+                }
+
+                if (img != null)
+                {
+                    categoryButtonImages.Add(img);
+                }
+            }
+
+            // 默认选中"全部"
+            UpdateCategoryButtonVisuals(0);
+        }
+
+        /// <summary>
+        /// 分类按钮点击
+        /// </summary>
+        private void OnCategoryClicked(BuildingCategory category, int buttonIndex)
+        {
+            if (currentCategory == category) return;
+
+            currentCategory = category;
+            UpdateCategoryButtonVisuals(buttonIndex);
+            FilterBuildingsByCategory();
+        }
+
+        /// <summary>
+        /// 更新分类按钮视觉
+        /// </summary>
+        private void UpdateCategoryButtonVisuals(int selectedIndex)
+        {
+            for (int i = 0; i < categoryButtonImages.Count; i++)
+            {
+                categoryButtonImages[i].color = (i == selectedIndex)
+                    ? categorySelectedColor
+                    : categoryNormalColor;
+            }
+        }
+
+        #endregion
+
+        #region 建造物数据加载
+
+        /// <summary>
+        /// 加载所有建造物数据
+        /// </summary>
+        private void LoadAllBuildingData()
+        {
+            allBuildingData.Clear();
+            loadedBlueprintData.Clear();
+
+            var manager = ModularBuildingManager.Instance;
+            if (manager == null) return;
+
+            foreach (var blueprint in manager.GetAllBlueprints())
+            {
+                var data = new BuildingItemData(blueprint);
+                data.isUnlocked = blueprint.IsTechUnlocked(currentTechLevel);
+                allBuildingData.Add(data);
+                loadedBlueprintData[blueprint.blueprintId] = data;
+            }
+
+            // 按科技等级排序
+            allBuildingData.Sort((a, b) => a.techLevel.CompareTo(b.techLevel));
+
+            FilterBuildingsByCategory();
+        }
+
+        /// <summary>
+        /// 按科技等级懒加载建造物数据
+        /// </summary>
+        public void LoadBuildingDataByTechLevel(int techLevel)
+        {
+            currentTechLevel = techLevel;
+
+            var manager = ModularBuildingManager.Instance;
+            if (manager == null) return;
+
+            foreach (var blueprint in manager.GetAllBlueprints())
+            {
+                // 只加载当前科技等级可用的建筑
+                if (blueprint.techLevel <= techLevel)
+                {
+                    if (!loadedBlueprintData.ContainsKey(blueprint.blueprintId))
+                    {
+                        var data = new BuildingItemData(blueprint);
+                        data.isUnlocked = true;
+                        allBuildingData.Add(data);
+                        loadedBlueprintData[blueprint.blueprintId] = data;
+                    }
+                    else
+                    {
+                        // 更新解锁状态
+                        loadedBlueprintData[blueprint.blueprintId].isUnlocked = true;
+                    }
+                }
+            }
+
+            // 按科技等级排序
+            allBuildingData.Sort((a, b) => a.techLevel.CompareTo(b.techLevel));
+
+            FilterBuildingsByCategory();
+        }
+
+        /// <summary>
+        /// 解锁新科技等级
+        /// </summary>
+        public void UnlockTechLevel(int newTechLevel)
+        {
+            if (newTechLevel <= currentTechLevel) return;
+
+            LoadBuildingDataByTechLevel(newTechLevel);
+        }
+
+        /// <summary>
+        /// 按分类筛选建造物
+        /// </summary>
+        private void FilterBuildingsByCategory()
+        {
+            filteredBuildingData.Clear();
+
+            foreach (var data in allBuildingData)
+            {
+                if (currentCategory == BuildingCategory.All ||
+                    data.blueprint.category == currentCategory)
+                {
+                    filteredBuildingData.Add(data);
+                }
+            }
+
+            // 更新滚动视图
+            if (buildingScrollView != null)
+            {
+                buildingScrollView.SetData(filteredBuildingData, OnBuildingItemClicked);
+            }
+        }
+
+        /// <summary>
+        /// 刷新可负担状态
+        /// </summary>
+        private void RefreshAffordableState()
+        {
+            if (buildingScrollView != null)
+            {
+                buildingScrollView.RefreshAffordableState();
+            }
+        }
+
+        #endregion
+
+        #region 面板控制
+
+        /// <summary>
+        /// 切换面板显示
+        /// </summary>
+        public void TogglePanel()
+        {
+            if (isAnimating) return;
+
+            if (isPanelOpen)
+            {
+                ClosePanel();
+            }
+            else
+            {
+                OpenPanel();
+            }
+        }
+
+        /// <summary>
+        /// 打开面板
+        /// </summary>
+        public void OpenPanel()
+        {
+            if (isPanelOpen || isAnimating) return;
+
+            isPanelOpen = true;
+            targetY = defaultY;
+            isAnimating = true;
+
+            // 刷新数据
+            RefreshAffordableState();
+
+            OnPanelToggled?.Invoke(true);
+        }
+
+        /// <summary>
+        /// 关闭面板
+        /// </summary>
+        public void ClosePanel()
+        {
+            if (!isPanelOpen || isAnimating) return;
+
+            isPanelOpen = false;
+            targetY = defaultY + hiddenYOffset;
+            isAnimating = true;
+
+            // 取消放置模式
+            CancelPlacement();
+
+            OnPanelToggled?.Invoke(false);
+        }
+
+        /// <summary>
+        /// 更新面板动画
+        /// </summary>
+        private void UpdatePanelAnimation()
+        {
+            if (panelTransform == null) return;
+
+            Vector2 pos = panelTransform.anchoredPosition;
+            float newY = Mathf.MoveTowards(pos.y, targetY, slideSpeed * Time.deltaTime);
+            panelTransform.anchoredPosition = new Vector2(pos.x, newY);
+
+            if (Mathf.Approximately(newY, targetY))
+            {
+                isAnimating = false;
+            }
+        }
+
+        #endregion
+
+        #region 建造物选择与放置
+
+        /// <summary>
+        /// 建造物项点击
+        /// </summary>
+        private void OnBuildingItemClicked(BuildingItemData data, int index)
+        {
+            if (data == null || !data.isUnlocked) return;
+
+            // 检查资源是否足够
+            if (!data.isAffordable)
+            {
+                UpdateHintText("资源不足，无法建造");
+                return;
+            }
+
+            // 选中建造物
+            selectedBuilding = data;
+            isPlacementMode = true;
+
+            // 开始放置预览
+            var placementController = BuildingPlacementController.Instance;
+            if (placementController != null)
+            {
+                placementController.StartPlacement(data.blueprint);
+            }
+
+            // 显示旋转提示
+            if (rotationHint != null)
+            {
+                rotationHint.SetActive(true);
+            }
+
+            UpdateHintText($"放置 {data.buildingName} - Q/E旋转, 点击放置, ESC取消");
+
+            OnBuildingSelected?.Invoke(data.blueprint);
+        }
+
+        /// <summary>
+        /// 处理放置模式输入
+        /// </summary>
+        private void HandlePlacementInput()
+        {
+            var placementController = BuildingPlacementController.Instance;
+            if (placementController == null || !placementController.IsPlacing) return;
+
+            // Q键逆时针旋转
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                placementController.SetRotation(placementController.CurrentRotation - 90);
+            }
+
+            // E键顺时针旋转
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                placementController.SetRotation(placementController.CurrentRotation + 90);
+            }
+
+            // ESC取消
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                CancelPlacement();
+            }
+
+            // 左键点击放置（由BuildingPlacementController处理）
+            // 这里监听放置成功事件
+        }
+
+        /// <summary>
+        /// 确认放置（由BuildingPlacementController调用）
+        /// </summary>
+        public void OnPlacementConfirmed()
+        {
+            if (selectedBuilding == null) return;
+
+            // 消耗资源
+            if (selectedBuilding.blueprint.ConsumeBuildCost())
+            {
+                Debug.Log($"成功放置建筑: {selectedBuilding.buildingName}");
+
+                // 刷新可负担状态
+                RefreshAffordableState();
+
+                // 连续放置模式：检查是否还能继续放置
+                if (selectedBuilding.blueprint.CanAfford())
+                {
+                    // 继续放置同一建筑
+                    var placementController = BuildingPlacementController.Instance;
+                    if (placementController != null)
+                    {
+                        placementController.StartPlacement(selectedBuilding.blueprint);
+                    }
+                    UpdateHintText($"继续放置 {selectedBuilding.buildingName}");
+                }
+                else
+                {
+                    // 资源不足，退出放置模式
+                    UpdateHintText("资源不足，放置结束");
+                    ExitPlacementMode();
+                }
+            }
+            else
+            {
+                UpdateHintText("资源不足，无法放置");
+                CancelPlacement();
+            }
+        }
+
+        /// <summary>
+        /// 取消放置
+        /// </summary>
+        public void CancelPlacement()
+        {
+            var placementController = BuildingPlacementController.Instance;
+            if (placementController != null && placementController.IsPlacing)
+            {
+                placementController.CancelPlacement();
+            }
+
+            ExitPlacementMode();
+        }
+
+        /// <summary>
+        /// 退出放置模式
+        /// </summary>
+        private void ExitPlacementMode()
+        {
+            isPlacementMode = false;
+            selectedBuilding = null;
+
+            if (buildingScrollView != null)
+            {
+                buildingScrollView.ClearSelection();
+            }
+
+            if (rotationHint != null)
+            {
+                rotationHint.SetActive(false);
+            }
+
+            UpdateHintText("点击建造物开始放置");
+        }
+
+        /// <summary>
+        /// 更新提示文本
+        /// </summary>
+        private void UpdateHintText(string text)
+        {
+            if (hintText != null)
+            {
+                hintText.text = text;
+            }
+        }
+
+        #endregion
+
+        #region 公共接口
+
+        /// <summary>
+        /// 获取当前是否在放置模式
+        /// </summary>
+        public bool IsPlacementMode => isPlacementMode;
+
+        /// <summary>
+        /// 获取当前选中的建筑
+        /// </summary>
+        public BuildingBlueprint SelectedBlueprint => selectedBuilding?.blueprint;
+
+        /// <summary>
+        /// 设置科技等级
+        /// </summary>
+        public void SetTechLevel(int level)
+        {
+            UnlockTechLevel(level);
+        }
+
+        /// <summary>
+        /// 强制刷新建造物列表
+        /// </summary>
+        public void RefreshBuildingList()
+        {
+            LoadBuildingDataByTechLevel(currentTechLevel);
+        }
+
+        #endregion
+    }
+}
