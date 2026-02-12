@@ -214,7 +214,7 @@ namespace PomodoroTimer.Resource
             return new BuildingProducerSaveData
             {
                 buildingInstanceId = buildingInstanceId,
-                configId = config?.blueprintId ?? 0,
+                configId = config?.BlueprintId ?? 0,
                 currentLevel = currentLevel,
                 productionTimers = productionTimers != null ? (float[])productionTimers.Clone() : null,
                 consumptionTimers = consumptionTimers != null ? (float[])consumptionTimers.Clone() : null

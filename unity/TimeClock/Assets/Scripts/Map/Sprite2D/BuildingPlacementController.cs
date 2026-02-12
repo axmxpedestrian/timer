@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using PomodoroTimer.Map.Data;
+using PomodoroTimer.UI;
 using PomodoroTimer.UI.Building;
 
 namespace PomodoroTimer.Map.Sprite2D
@@ -29,6 +30,9 @@ namespace PomodoroTimer.Map.Sprite2D
         private Vector2Int currentGridPos;
         private int currentRotation;
         private int currentFloorCount;
+
+        private ModularBuildingInstance lastPlacedBuilding;
+        public ModularBuildingInstance LastPlacedBuilding => lastPlacedBuilding;
 
         // 预览对象
         private GameObject previewObject;
@@ -150,6 +154,9 @@ namespace PomodoroTimer.Map.Sprite2D
             currentFloorCount = floorCount > 0 ? floorCount : blueprint.defaultFloorCount;
             isPlacing = true;
 
+            // 隐藏干扰面板
+            MainUIController.Instance?.EnterBuildMode();
+
             BuildPreviewVisuals();
             previewObject.SetActive(true);
 
@@ -191,6 +198,7 @@ namespace PomodoroTimer.Map.Sprite2D
 
             if (building != null)
             {
+                lastPlacedBuilding = building;
                 OnPlacementConfirmed?.Invoke(currentBlueprint, currentGridPos, currentRotation);
 
                 // 播放放置音效
@@ -237,6 +245,12 @@ namespace PomodoroTimer.Map.Sprite2D
             currentBlueprint = null;
             previewObject.SetActive(false);
             ClearPreview();
+
+            // 恢复面板（仅在销毁模式也未激活时）
+            if (DemolishController.Instance == null || !DemolishController.Instance.IsDemolishMode)
+            {
+                MainUIController.Instance?.ExitBuildMode();
+            }
         }
 
         #endregion
@@ -245,7 +259,8 @@ namespace PomodoroTimer.Map.Sprite2D
 
         private void HandleInput()
         {
-            // 旋转 - Q键逆时针，E键顺时针，R键或鼠标中键90度
+            // 旋转 - Q键逆时针，E键顺时针，R键90度
+            // 注意：鼠标中键已用于拖动视角（MapInputController），不再绑定旋转
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 SetRotation(currentRotation - 90);
@@ -254,7 +269,7 @@ namespace PomodoroTimer.Map.Sprite2D
             {
                 SetRotation(currentRotation + 90);
             }
-            else if (Input.GetKeyDown(KeyCode.R) || Input.GetMouseButtonDown(2))
+            else if (Input.GetKeyDown(KeyCode.R))
             {
                 Rotate90();
             }
@@ -327,7 +342,7 @@ namespace PomodoroTimer.Map.Sprite2D
         public void Rotate90()
         {
             currentRotation = (currentRotation + 90) % 360;
-            RebuildGridIndicators();
+            BuildPreviewVisuals();
             UpdatePreview();
         }
 
@@ -338,7 +353,7 @@ namespace PomodoroTimer.Map.Sprite2D
         {
             currentRotation = ((rotation % 360) + 360) % 360;
             currentRotation = (currentRotation / 90) * 90;
-            RebuildGridIndicators();
+            BuildPreviewVisuals();
             UpdatePreview();
         }
 
@@ -393,6 +408,11 @@ namespace PomodoroTimer.Map.Sprite2D
 
             // 更新世界位置
             Vector3 worldPos = mapManager.GridToWorld(currentGridPos);
+
+            // 修正Y偏移：GridToWorld返回菱形底部顶点，建筑Sprite底部对应菱形中心线
+            float tileHalfHeight = (mapManager.GetTileHeight() / 2f) / mapManager.GetPixelsPerUnit();
+            worldPos.y -= tileHalfHeight;
+
             worldPos.y += currentBlueprint.yOffset / mapManager.GetPixelsPerUnit();
             previewObject.transform.position = worldPos;
 
@@ -425,16 +445,20 @@ namespace PomodoroTimer.Map.Sprite2D
 
             if (currentBlueprint == null) return;
 
-            // 构建部件预览
+            // 构建部件预览（使用当前旋转角度选择对应方向的 sprite 和偏移）
             if (currentBlueprint.partSlots != null)
             {
                 foreach (var slot in currentBlueprint.partSlots)
                 {
                     var variant = slot.GetDefaultVariant();
-                    if (variant != null && variant.frames != null && variant.frames.Length > 0)
-                    {
-                        CreatePreviewSprite(variant.frames[0], variant.localOffset, variant.sortingOrderOffset);
-                    }
+                    if (variant == null) continue;
+
+                    Sprite frame = variant.GetFrameForRotation(0, currentRotation);
+                    if (frame == null) continue;
+
+                    Vector2 offset = variant.GetLocalOffsetForRotation(currentRotation);
+                    int sortOffset = variant.GetSortingOrderOffsetForRotation(currentRotation);
+                    CreatePreviewSprite(frame, offset, sortOffset);
                 }
             }
 
@@ -452,13 +476,16 @@ namespace PomodoroTimer.Map.Sprite2D
                     foreach (var slot in floor.partSlots)
                     {
                         var variant = slot.GetDefaultVariant();
-                        if (variant != null && variant.frames != null && variant.frames.Length > 0)
-                        {
-                            Vector2 offset = variant.localOffset;
-                            offset.y += floor.heightOffset / ppu;
-                            CreatePreviewSprite(variant.frames[0], offset,
-                                floor.sortingOrderBase + variant.sortingOrderOffset);
-                        }
+                        if (variant == null) continue;
+
+                        Sprite frame = variant.GetFrameForRotation(0, currentRotation);
+                        if (frame == null) continue;
+
+                        Vector2 offset = variant.GetLocalOffsetForRotation(currentRotation);
+                        offset.y += floor.heightOffset / ppu;
+                        int sortOffset = floor.sortingOrderBase
+                            + variant.GetSortingOrderOffsetForRotation(currentRotation);
+                        CreatePreviewSprite(frame, offset, sortOffset);
                     }
                 }
             }
@@ -542,44 +569,76 @@ namespace PomodoroTimer.Map.Sprite2D
 
         private Sprite CreateDefaultGridSprite()
         {
-            // 创建一个简单的菱形指示器
-            int size = 64;
-            var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            // 优先从实际地砖Sprite读取像素尺寸和PPU，确保网格指示器与地砖完全匹配
+            var mapManager = IsometricSpriteMapManager.Instance;
+            Sprite tileSprite = mapManager != null ? mapManager.GetDefaultTileSprite() : null;
+
+            int width, height;
+            float ppu;
+
+            if (tileSprite != null)
+            {
+                // 使用实际地砖sprite的像素尺寸和PPU
+                width  = Mathf.RoundToInt(tileSprite.rect.width);
+                height = Mathf.RoundToInt(tileSprite.rect.height);
+                ppu    = tileSprite.pixelsPerUnit;
+            }
+            else
+            {
+                // 回退：用地图管理器的配置值
+                width  = mapManager != null ? Mathf.RoundToInt(mapManager.GetTileWidth())  : 128;
+                height = mapManager != null ? Mathf.RoundToInt(mapManager.GetTileHeight()) : 64;
+                ppu    = mapManager != null ? mapManager.GetPixelsPerUnit() : 32f;
+            }
+
+            var texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
             texture.filterMode = FilterMode.Point;
 
             Color transparent = new Color(0, 0, 0, 0);
             Color white = Color.white;
 
             // 填充透明
-            for (int y = 0; y < size; y++)
+            for (int y = 0; y < height; y++)
             {
-                for (int x = 0; x < size; x++)
+                for (int x = 0; x < width; x++)
                 {
                     texture.SetPixel(x, y, transparent);
                 }
             }
 
-            // 绘制菱形边框
-            int halfW = size / 2;
-            int halfH = size / 4;
-            int centerX = size / 2;
-            int centerY = size / 2;
+            // 绘制菱形边框（线宽2像素，更清晰）
+            int halfW = width / 2;
+            int halfH = height / 2;
+            int centerX = width / 2;
+            int centerY = height / 2;
 
             for (int i = 0; i <= halfW; i++)
             {
-                int y1 = centerY + (i * halfH / halfW);
-                int y2 = centerY - (i * halfH / halfW);
+                int dy = i * halfH / halfW;
 
-                texture.SetPixel(centerX + i, y1, white);
-                texture.SetPixel(centerX - i, y1, white);
-                texture.SetPixel(centerX + i, y2, white);
-                texture.SetPixel(centerX - i, y2, white);
+                for (int t = -1; t <= 1; t++)
+                {
+                    // 上半菱形边
+                    int uy = centerY + dy + t;
+                    if (uy >= 0 && uy < height)
+                    {
+                        if (centerX + i < width) texture.SetPixel(centerX + i, uy, white);
+                        if (centerX - i >= 0)    texture.SetPixel(centerX - i, uy, white);
+                    }
+                    // 下半菱形边
+                    int ly = centerY - dy + t;
+                    if (ly >= 0 && ly < height)
+                    {
+                        if (centerX + i < width) texture.SetPixel(centerX + i, ly, white);
+                        if (centerX - i >= 0)    texture.SetPixel(centerX - i, ly, white);
+                    }
+                }
             }
 
             texture.Apply();
 
-            return Sprite.Create(texture, new Rect(0, 0, size, size),
-                new Vector2(0.5f, 0.5f), 32f);
+            return Sprite.Create(texture, new Rect(0, 0, width, height),
+                new Vector2(0.5f, 0.5f), ppu);
         }
 
         #endregion

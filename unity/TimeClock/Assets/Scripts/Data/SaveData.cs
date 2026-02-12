@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using PomodoroTimer.Resource;
+using PomodoroTimer.Map.Data;
 
 namespace PomodoroTimer.Data
 {
@@ -34,6 +35,9 @@ namespace PomodoroTimer.Data
 
         // 建筑生产器数据
         public List<BuildingProducerSaveData> buildingProducers = new List<BuildingProducerSaveData>();
+
+        // 建筑系统数据（建筑实例的位置、状态等）
+        public BuildingSystemSaveData buildingSystem = new BuildingSystemSaveData();
 
         // 最后保存时间
         public string lastSaveTime;
@@ -124,7 +128,7 @@ namespace PomodoroTimer.Data
         public int currentStreak = 0;               // 当前连续天数
         public int longestStreak = 0;               // 最长连续天数
         public string lastActiveDate;               // 最后活跃日期
-        public int totalCoins = 0;                  // 总代币数量
+        public int totalCoins = 0;                  // 历史累计获得代币（只增不减，用于统计展示，非当前余额）
 
         /// <summary>
         /// 添加完成的番茄钟
@@ -171,14 +175,6 @@ namespace PomodoroTimer.Data
 
                 lastActiveDate = today;
             }
-        }
-
-        /// <summary>
-        /// 计算代币数量（保留用于兼容）
-        /// </summary>
-        public static int CalculateCoins(float minutes)
-        {
-            return CoinCalculator.CalculateCoins(minutes);
         }
 
         /// <summary>

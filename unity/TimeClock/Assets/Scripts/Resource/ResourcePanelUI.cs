@@ -34,6 +34,13 @@ namespace PomodoroTimer.Resource
                 ResourceManager.Instance.OnResourceChanged += OnResourceChanged;
                 ResourceManager.Instance.OnResourceUnlocked += OnResourceUnlocked;
                 ResourceManager.Instance.OnResourcesLoaded += OnResourcesLoaded;
+
+                // 如果资源管理器已经初始化完成，直接刷新显示
+                // （防止错过 OnResourcesLoaded 事件）
+                if (ResourceManager.Instance.IsInitialized)
+                {
+                    RefreshAllItems();
+                }
             }
         }
 

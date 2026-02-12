@@ -87,7 +87,7 @@ namespace PomodoroTimer.Map.Data
         /// <summary>
         /// 获取旋转后的掩码
         /// </summary>
-        /// <param name="rotation">旋转角度：0, 90, 180, 270</param>
+        /// <param name="rotation">旋转角度：0, 90, 180, 270（等距视角顺时针）</param>
         public OccupancyMask GetRotated(int rotation)
         {
             rotation = ((rotation % 360) + 360) % 360;
@@ -109,22 +109,26 @@ namespace PomodoroTimer.Map.Data
                         continue;
 
                     int newX, newY;
+                    // 等距坐标系中 grid x 向屏幕右下，grid y 向屏幕左下。
+                    // 等距视角顺时针 90°：原来的 +x 方向变成 +y 方向。
+                    // 对应变换：newX = y, newY = width-1-x
+                    // （与标准 2D 数组顺时针相反，因为 grid Y 轴方向不同）
                     switch (rotation)
                     {
                         case 90:
-                            // 90度顺时针: newX = height-1-y, newY = x
-                            newX = height - 1 - y;
-                            newY = x;
+                            // 等距顺时针90度: newX = y, newY = width-1-x
+                            newX = y;
+                            newY = width - 1 - x;
                             break;
                         case 180:
-                            // 180度: newX = width-1-x, newY = height-1-y
+                            // 180度（方向无关）: newX = width-1-x, newY = height-1-y
                             newX = width - 1 - x;
                             newY = height - 1 - y;
                             break;
                         case 270:
-                            // 270度顺时针 (90度逆时针): newX = y, newY = width-1-x
-                            newX = y;
-                            newY = width - 1 - x;
+                            // 等距顺时针270度（逆时针90度）: newX = height-1-y, newY = x
+                            newX = height - 1 - y;
+                            newY = x;
                             break;
                         default:
                             newX = x;

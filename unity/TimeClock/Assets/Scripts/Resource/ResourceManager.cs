@@ -305,18 +305,6 @@ namespace PomodoroTimer.Resource
             AddResource(ResourceType.Coin, coins, "Pomodoro");
         }
 
-        /// <summary>
-        /// 同步代币数量（从StatisticsData）
-        /// </summary>
-        public void SyncCoinsFromStatistics(int totalCoins)
-        {
-            long currentCoins = GetAmount(ResourceType.Coin);
-            if (totalCoins != currentCoins)
-            {
-                SetResource(ResourceType.Coin, totalCoins, "Sync");
-            }
-        }
-
         #endregion
 
         #region 存档

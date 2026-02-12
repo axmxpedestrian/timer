@@ -174,6 +174,12 @@ namespace PomodoroTimer.Map.Sprite2D
             if (mapManager == null) return;
 
             Vector3 worldPos = mapManager.GridToWorld(gridPosition);
+
+            // 修正建筑Y偏移：GridToWorld返回菱形底部顶点，
+            // 但建筑Sprite的底部对应菱形中心线，需要下移半个tileHeight
+            float tileHalfHeight = (mapManager.GetTileHeight() / 2f) / mapManager.GetPixelsPerUnit();
+            worldPos.y -= tileHalfHeight;
+
             if (blueprint != null)
                 worldPos.y += blueprint.yOffset / mapManager.GetPixelsPerUnit();
             transform.position = worldPos;

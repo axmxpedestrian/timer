@@ -379,6 +379,68 @@ namespace PomodoroTimer.UI
             UpdateHideUIButtonIcon(false);
         }
 
+        /// <summary>
+        /// 进入建造/销毁模式时隐藏干扰面板并关闭其 Raycast
+        /// </summary>
+        public void EnterBuildMode()
+        {
+            SetBuildModePanels(false);
+        }
+
+        /// <summary>
+        /// 退出建造/销毁模式时恢复面板
+        /// </summary>
+        public void ExitBuildMode()
+        {
+            // 仅在非手动隐藏状态下恢复
+            if (hideUIState == 0)
+            {
+                SetBuildModePanels(true);
+            }
+        }
+
+        /// <summary>
+        /// 设置建造模式下需要隐藏的面板（TaskSection、ControlButtons、TimerSection）
+        /// </summary>
+        private void SetBuildModePanels(bool visible)
+        {
+            taskSection?.SetActive(visible);
+            controlButtons?.SetActive(visible);
+
+            if (timerSection != null)
+            {
+                // 隐藏时只保留 TimerText，与 hideUIState=1 行为一致
+                if (visible)
+                {
+                    timerSection.SetActive(true);
+                    SetTimerSectionChildrenVisibility(true);
+                }
+                else
+                {
+                    timerSection.SetActive(true);
+                    SetTimerSectionChildrenVisibility(false);
+                }
+            }
+
+            // 关闭/恢复这些面板上的 Raycast Target
+            SetPanelRaycast(taskSection, visible);
+            SetPanelRaycast(controlButtons, visible);
+            SetPanelRaycast(timerSection, visible);
+        }
+
+        /// <summary>
+        /// 递归设置 GameObject 下所有 Graphic 组件的 raycastTarget
+        /// </summary>
+        private static void SetPanelRaycast(GameObject panel, bool enabled)
+        {
+            if (panel == null) return;
+            var graphics = panel.GetComponentsInChildren<Graphic>(true);
+            foreach (var g in graphics)
+            {
+                g.raycastTarget = enabled;
+            }
+        }
+
         #endregion
         
         #region 计时器事件处理
@@ -454,27 +516,10 @@ namespace PomodoroTimer.UI
         /// </summary>
         private void UpdateCoinDisplay()
         {
-            if (coinText == null) return;
-
-            long totalCoins = 0;
-
-            // 优先从ResourceManager获取
-            if (ResourceManager.Instance != null)
-            {
-                totalCoins = ResourceManager.Instance.GetAmount(ResourceType.Coin);
-            }
-            // 备用：从StatisticsManager获取
-            else if (StatisticsManager.Instance != null)
-            {
-                var stats = StatisticsManager.Instance.GetOverallStatistics();
-                if (stats != null)
-                {
-                    totalCoins = stats.totalCoins;
-                }
-            }
-
-            coinText.text = $"🪙 {ResourceDefinition.FormatAmount(totalCoins)}";
-            lastDisplayedCoins = (int)totalCoins;
+            if (coinText == null || ResourceManager.Instance == null) return;
+            long currentCoins = ResourceManager.Instance.GetAmount(ResourceType.Coin);
+            coinText.text = $"🪙 {ResourceDefinition.FormatAmount(currentCoins)}";
+            lastDisplayedCoins = (int)currentCoins;
         }
 
         #endregion

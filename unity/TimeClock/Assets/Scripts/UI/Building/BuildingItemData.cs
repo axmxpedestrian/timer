@@ -1,5 +1,6 @@
 using UnityEngine;
 using PomodoroTimer.Map.Data;
+using PomodoroTimer.Resource;
 
 namespace PomodoroTimer.UI.Building
 {
@@ -11,7 +12,7 @@ namespace PomodoroTimer.UI.Building
         public BuildingBlueprint blueprint;
         public Sprite iconSprite;
         public string buildingName;
-        public BuildingCostEntry[] costs;
+        public ResourceCost[] costs;
         public bool isAffordable;
         public bool isUnlocked;
         public int techLevel;

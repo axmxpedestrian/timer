@@ -25,7 +25,8 @@ namespace PomodoroTimer.Map.Sprite2D
         // 建造进度
         private float constructionProgress = 1f;
 
-        // 缓存的Shader属性ID
+        // 引用集中定义的排序常量，避免各处硬编码导致不一致
+        private const int SLOT_ORDER_STEP = IsometricSortingHelper.SLOT_ORDER_STEP;
         private static readonly int TintColorId = Shader.PropertyToID("_TintColor");
         private static readonly int BrightnessId = Shader.PropertyToID("_Brightness");
         private static readonly int EnableTintId = Shader.PropertyToID("_EnableTint");
@@ -37,6 +38,7 @@ namespace PomodoroTimer.Map.Sprite2D
         {
             public string slotId;
             public int floorIndex;
+            public PartSlotType slotType;
             public SpriteRenderer spriteRenderer;
             public PartVariant variant;
             public BuildingPartConfig config;
@@ -193,8 +195,12 @@ namespace PomodoroTimer.Map.Sprite2D
             var go = new GameObject($"Part_{slot.slotId}_{floorIndex}");
             go.transform.SetParent(partsContainer);
 
-            // 计算本地位置
-            Vector3 localPos = new Vector3(variant.localOffset.x, variant.localOffset.y, 0);
+            // 获取当前建筑旋转角度
+            int rotation = buildingInstance?.Rotation ?? 0;
+
+            // 根据旋转角度获取本地偏移
+            Vector2 offset = variant.GetLocalOffsetForRotation(rotation);
+            Vector3 localPos = new Vector3(offset.x, offset.y, 0);
             if (floorIndex >= 0 && buildingInstance.Blueprint.floors != null)
             {
                 var floor = buildingInstance.Blueprint.GetFloor(floorIndex);
@@ -207,9 +213,9 @@ namespace PomodoroTimer.Map.Sprite2D
             }
             go.transform.localPosition = localPos;
 
-            // 创建SpriteRenderer
+            // 创建SpriteRenderer，根据旋转角度选择对应方向的 sprite
             var sr = go.AddComponent<SpriteRenderer>();
-            sr.sprite = variant.GetFrame(0);
+            sr.sprite = variant.GetFrameForRotation(0, rotation);
 
             // 选择材质
             if (variant.isTintable && tintableMaterial != null)
@@ -226,6 +232,7 @@ namespace PomodoroTimer.Map.Sprite2D
             {
                 slotId = slot.slotId,
                 floorIndex = floorIndex,
+                slotType = slot.slotType,
                 spriteRenderer = sr,
                 variant = variant,
                 config = config,
@@ -235,9 +242,12 @@ namespace PomodoroTimer.Map.Sprite2D
             // 应用染色
             ApplyTint(partRenderer);
 
-            // 设置排序
-            sr.sortingLayerName = IsometricSortingHelper.LAYER_BUILDINGS;
-            sr.sortingOrder = baseSortingOrder + variant.sortingOrderOffset;
+            // 设置排序：heightLevel + floorIndex → Sorting Layer，网格深度 + 部件类型 → sortingOrder
+            int heightLevel = buildingInstance?.Blueprint?.heightLevel ?? 0;
+            int effectiveFloor = Mathf.Max(0, floorIndex);
+            sr.sortingLayerName = IsometricSortingHelper.GetBuildingSortingLayer(heightLevel, effectiveFloor);
+            sr.sortingOrder = baseSortingOrder + (int)slot.slotType * SLOT_ORDER_STEP
+                + variant.GetSortingOrderOffsetForRotation(rotation);
 
             partRenderers.Add(partRenderer);
             return partRenderer;
@@ -278,13 +288,18 @@ namespace PomodoroTimer.Map.Sprite2D
             var gridPos = buildingInstance.GridPosition;
             int heightLevel = buildingInstance.Blueprint?.heightLevel ?? 0;
             int baseOrder = IsometricSortingHelper.CalculateBuildingSortingOrder(gridPos, heightLevel);
+            int rotation = buildingInstance.Rotation;
 
             foreach (var part in partRenderers)
             {
                 if (part.spriteRenderer != null)
                 {
-                    int floorOffset = part.floorIndex >= 0 ? part.floorIndex * 100 : 0;
-                    part.spriteRenderer.sortingOrder = baseOrder + floorOffset + part.variant.sortingOrderOffset;
+                    int effectiveFloor = Mathf.Max(0, part.floorIndex);
+                    part.spriteRenderer.sortingLayerName =
+                        IsometricSortingHelper.GetBuildingSortingLayer(heightLevel, effectiveFloor);
+                    part.spriteRenderer.sortingOrder = baseOrder
+                        + (int)part.slotType * SLOT_ORDER_STEP
+                        + part.variant.GetSortingOrderOffsetForRotation(rotation);
                 }
             }
         }
@@ -382,10 +397,11 @@ namespace PomodoroTimer.Map.Sprite2D
             isAnimating = false;
             if (buildingInstance?.Blueprint == null) return;
 
-            // 检查是否有多帧动画
+            // 检查是否有多帧动画（考虑方向视图）
+            int rotation = buildingInstance?.Rotation ?? 0;
             foreach (var part in partRenderers)
             {
-                if (part.variant.FrameCount > 1)
+                if (part.variant.GetFrameCountForRotation(rotation) > 1)
                 {
                     isAnimating = true;
                     break;
@@ -404,16 +420,18 @@ namespace PomodoroTimer.Map.Sprite2D
 
             animationTime += Time.deltaTime;
             float frameDuration = 1f / frameRate;
+            int rotation = buildingInstance.Rotation;
 
             foreach (var part in partRenderers)
             {
-                if (part.variant.FrameCount <= 1) continue;
+                int frameCount = part.variant.GetFrameCountForRotation(rotation);
+                if (frameCount <= 1) continue;
 
-                int newFrame = Mathf.FloorToInt(animationTime / frameDuration) % part.variant.FrameCount;
+                int newFrame = Mathf.FloorToInt(animationTime / frameDuration) % frameCount;
                 if (newFrame != part.currentFrame)
                 {
                     part.currentFrame = newFrame;
-                    part.spriteRenderer.sprite = part.variant.GetFrame(newFrame);
+                    part.spriteRenderer.sprite = part.variant.GetFrameForRotation(newFrame, rotation);
                 }
             }
         }

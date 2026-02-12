@@ -432,6 +432,19 @@ namespace PomodoroTimer.Map
 
         public Camera GetCamera() => mapCamera;
 
+        /// <summary>
+        /// 启用/禁用鼠标左键拖动视角
+        /// </summary>
+        public void SetLeftClickDragEnabled(bool enabled)
+        {
+            enableLeftClickDrag = enabled;
+            // 如果正在左键拖动中，立即中断
+            if (!enabled && isDragging && !Input.GetMouseButton(1) && !Input.GetMouseButton(2))
+            {
+                isDragging = false;
+            }
+        }
+
         #endregion
     }
 }

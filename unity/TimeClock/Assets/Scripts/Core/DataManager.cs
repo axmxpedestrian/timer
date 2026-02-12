@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using PomodoroTimer.Data;
 using PomodoroTimer.Resource;
+using PomodoroTimer.Map.Data;
+using PomodoroTimer.Map.Sprite2D;
 
 namespace PomodoroTimer.Core
 {
@@ -27,6 +29,11 @@ namespace PomodoroTimer.Core
         public SessionData CurrentSession => saveData.currentSession;
         public StatisticsData Statistics => saveData.statistics;
         public ResourceSaveData ResourceData => saveData.resourceData;
+
+        /// <summary>
+        /// 获取建筑系统存档数据（供 ModularBuildingManager 主动加载）
+        /// </summary>
+        public BuildingSystemSaveData GetBuildingSystemSaveData() => saveData?.buildingSystem;
 
         public event Action OnDataLoaded;
         public event Action OnDataSaved;
@@ -105,6 +112,8 @@ namespace PomodoroTimer.Core
                             saveData.resourceData = new ResourceSaveData();
                         if (saveData.buildingProducers == null)
                             saveData.buildingProducers = new List<BuildingProducerSaveData>();
+                        if (saveData.buildingSystem == null)
+                            saveData.buildingSystem = new BuildingSystemSaveData();
 
                         // 过滤掉无效的任务
                         saveData.tasks.RemoveAll(t => t == null || !t.IsValid());
@@ -146,8 +155,15 @@ namespace PomodoroTimer.Core
             {
                 ResourceManager.Instance.Initialize(saveData.resourceData);
 
-                // 同步代币数量（从统计数据）
-                ResourceManager.Instance.SyncCoinsFromStatistics(saveData.statistics.totalCoins);
+                // 旧存档迁移：如果 ResourceSaveData 中没有 Coin 记录，
+                // 从 StatisticsData.totalCoins 迁移（仅执行一次，下次保存后 ResourceSaveData 会包含 Coin）
+                if (ResourceManager.Instance.GetAmount(ResourceType.Coin) == 0
+                    && saveData.statistics.totalCoins > 0)
+                {
+                    ResourceManager.Instance.AddResource(ResourceType.Coin,
+                        saveData.statistics.totalCoins, "Migration");
+                    Debug.Log($"[DataManager] 旧存档迁移: 从 StatisticsData 迁移 {saveData.statistics.totalCoins} Coin 到 ResourceManager");
+                }
             }
 
             // 初始化建筑资源系统
@@ -157,6 +173,31 @@ namespace PomodoroTimer.Core
             }
 
             OnDataLoaded?.Invoke();
+
+            // 延迟加载建筑系统数据（需要等待 ModularBuildingManager 初始化完成）
+            StartCoroutine(LoadBuildingSystemDelayed());
+        }
+
+        private System.Collections.IEnumerator LoadBuildingSystemDelayed()
+        {
+            // 等待 ModularBuildingManager 就绪（可能由 MapSystemInitializer 在 Start 中创建）
+            float timeout = 5f;
+            float elapsed = 0f;
+            while (ModularBuildingManager.Instance == null && elapsed < timeout)
+            {
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            if (ModularBuildingManager.Instance != null && saveData.buildingSystem != null
+                && saveData.buildingSystem.buildings != null && saveData.buildingSystem.buildings.Count > 0)
+            {
+                // 再等一帧，确保 ModularBuildingManager.Start() 已执行完毕（池初始化、蓝图字典等）
+                yield return null;
+
+                ModularBuildingManager.Instance.LoadFromSaveData(saveData.buildingSystem);
+                Log($"建筑系统数据加载完成，共 {saveData.buildingSystem.buildings.Count} 个建筑");
+            }
         }
         
         /// <summary>
@@ -189,6 +230,12 @@ namespace PomodoroTimer.Core
                 if (BuildingResourceSystemManager.Instance != null)
                 {
                     saveData.buildingProducers = BuildingResourceSystemManager.Instance.CreateSaveData();
+                }
+
+                // 更新建筑系统数据（建筑实例的位置、状态等）
+                if (ModularBuildingManager.Instance != null)
+                {
+                    saveData.buildingSystem = ModularBuildingManager.Instance.CreateSaveData();
                 }
 
                 saveData.UpdateSaveTime();

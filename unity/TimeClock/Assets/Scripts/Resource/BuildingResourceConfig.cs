@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using PomodoroTimer.Map.Data;
 
 namespace PomodoroTimer.Resource
 {
@@ -64,16 +65,14 @@ namespace PomodoroTimer.Resource
     [CreateAssetMenu(fileName = "BuildingResourceConfig", menuName = "Resource/Building Resource Config")]
     public class BuildingResourceConfig : ScriptableObject
     {
-        [Header("基础信息")]
-        [Tooltip("对应的建筑模板ID")]
-        public int blueprintId;
+        [Header("关联建筑")]
+        [Tooltip("对应的建筑蓝图（从此读取 blueprintId、buildingName、buildCosts）")]
+        public BuildingBlueprint blueprint;
 
-        [Tooltip("建筑名称")]
-        public string buildingName;
-
-        [Header("建造花费")]
-        [Tooltip("初次建造花费")]
-        public ResourceCost[] buildCosts;
+        // 访问器 — 从 blueprint 读取，消除重复
+        public int BlueprintId => blueprint != null ? blueprint.blueprintId : 0;
+        public string BuildingName => blueprint != null ? blueprint.buildingName : "";
+        public ResourceCost[] BuildCosts => blueprint != null ? blueprint.buildCosts : null;
 
         [Header("升级花费")]
         [Tooltip("每级升级花费倍率")]
@@ -102,11 +101,12 @@ namespace PomodoroTimer.Resource
         public Dictionary<ResourceType, long> GetCostForLevel(int level)
         {
             var costs = new Dictionary<ResourceType, long>();
-            if (buildCosts == null) return costs;
+            var baseCosts = BuildCosts;
+            if (baseCosts == null) return costs;
 
             float multiplier = level <= 1 ? 1f : Mathf.Pow(upgradeCostMultiplier, level - 1);
 
-            foreach (var cost in buildCosts)
+            foreach (var cost in baseCosts)
             {
                 long amount = Mathf.RoundToInt(cost.amount * multiplier);
                 if (costs.ContainsKey(cost.resourceType))

@@ -4,18 +4,42 @@ namespace PomodoroTimer.Map.Data
 {
     /// <summary>
     /// 部件槽位类型
+    /// 枚举值同时作为默认渲染排序基准（值越大越靠前绘制）
+    /// 实际排序：
+    ///   Sorting Layer = GetBuildingSortingLayer(heightLevel, floorIndex)  ← 垂直分层
+    ///   sortingOrder  = baseOrder + slotType * SLOT_ORDER_STEP + sortingOrderOffset  ← 水平排序
+    /// 常量定义见 IsometricSortingHelper
     /// </summary>
     public enum PartSlotType
     {
-        Foundation,     // 地基
-        Frame,          // 框架
-        Walls,          // 墙壁
-        Windows,        // 窗户
-        Doors,          // 门
-        Roof,           // 屋顶
-        Decorations,    // 装饰
-        Chimney,        // 烟囱
-        Lights          // 灯光
+        Foundation  = 0,    // 地基（最底层）
+        Frame       = 1,    // 框架
+        Walls       = 2,    // 墙壁
+        Doors       = 3,    // 门
+        Windows     = 4,    // 窗户
+        Roof        = 5,    // 屋顶
+        Decorations = 6,    // 装饰
+        Chimney     = 7,    // 烟囱
+        Lights      = 8     // 灯光（最顶层）
+    }
+
+    /// <summary>
+    /// 方向视图数据 - 存储某个旋转角度下的 sprite 和偏移
+    /// </summary>
+    [System.Serializable]
+    public class DirectionalView
+    {
+        [Tooltip("旋转角度：0/90/180/270")]
+        public int rotation;
+
+        [Tooltip("该方向的动画帧")]
+        public Sprite[] frames;
+
+        [Tooltip("该方向的本地偏移（覆盖默认 localOffset）")]
+        public Vector2 localOffset;
+
+        [Tooltip("该方向的排序偏移微调（叠加在默认 sortingOrderOffset 上）")]
+        public int sortingOrderOffsetDelta;
     }
 
     /// <summary>
@@ -27,8 +51,11 @@ namespace PomodoroTimer.Map.Data
         [Tooltip("变体唯一标识")]
         public string variantId;
 
-        [Tooltip("动画帧（灰度图用于染色）")]
+        [Tooltip("默认动画帧（0°方向，或无方向视图时使用）")]
         public Sprite[] frames;
+
+        [Tooltip("方向视图列表（可选，为90°/180°/270°提供不同sprite）")]
+        public DirectionalView[] directionalViews;
 
         [Tooltip("是否支持染色")]
         public bool isTintable = true;
@@ -36,11 +63,76 @@ namespace PomodoroTimer.Map.Data
         [Tooltip("默认染色颜色")]
         public Color defaultTint = Color.white;
 
-        [Tooltip("相对于建筑原点的本地偏移")]
+        [Tooltip("相对于建筑原点的本地偏移（默认/0°方向）")]
         public Vector2 localOffset;
 
         [Tooltip("排序顺序偏移")]
         public int sortingOrderOffset;
+
+        /// <summary>
+        /// 获取指定旋转角度的方向视图，没有则返回 null
+        /// </summary>
+        public DirectionalView GetDirectionalView(int rotation)
+        {
+            if (directionalViews == null || directionalViews.Length == 0)
+                return null;
+            rotation = ((rotation % 360) + 360) % 360;
+            foreach (var view in directionalViews)
+            {
+                if (view.rotation == rotation)
+                    return view;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// 获取指定旋转角度下的帧（优先方向视图，回退到默认 frames）
+        /// </summary>
+        public Sprite GetFrameForRotation(int frameIndex, int rotation)
+        {
+            var view = GetDirectionalView(rotation);
+            if (view != null && view.frames != null && view.frames.Length > 0)
+                return view.frames[Mathf.Clamp(frameIndex, 0, view.frames.Length - 1)];
+            return GetFrame(frameIndex);
+        }
+
+        /// <summary>
+        /// 获取指定旋转角度下的本地偏移
+        /// </summary>
+        public Vector2 GetLocalOffsetForRotation(int rotation)
+        {
+            var view = GetDirectionalView(rotation);
+            if (view != null)
+                return view.localOffset;
+            return localOffset;
+        }
+
+        /// <summary>
+        /// 获取指定旋转角度下的排序偏移
+        /// </summary>
+        public int GetSortingOrderOffsetForRotation(int rotation)
+        {
+            var view = GetDirectionalView(rotation);
+            if (view != null)
+                return sortingOrderOffset + view.sortingOrderOffsetDelta;
+            return sortingOrderOffset;
+        }
+
+        /// <summary>
+        /// 获取指定旋转角度下的帧数
+        /// </summary>
+        public int GetFrameCountForRotation(int rotation)
+        {
+            var view = GetDirectionalView(rotation);
+            if (view != null && view.frames != null && view.frames.Length > 0)
+                return view.frames.Length;
+            return FrameCount;
+        }
+
+        /// <summary>
+        /// 是否有方向视图配置
+        /// </summary>
+        public bool HasDirectionalViews => directionalViews != null && directionalViews.Length > 0;
 
         public Sprite GetFrame(int index)
         {

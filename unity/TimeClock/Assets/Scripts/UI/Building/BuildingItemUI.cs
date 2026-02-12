@@ -100,11 +100,6 @@ namespace PomodoroTimer.UI.Building
 
             if (data.costs == null || data.costs.Length == 0)
             {
-                // 兼容旧版buildCost
-                if (data.blueprint != null && data.blueprint.buildCost > 0)
-                {
-                    CreateOrUpdateCostItem(0, ResourceType.Coin, data.blueprint.buildCost, data.isAffordable);
-                }
                 return;
             }
 

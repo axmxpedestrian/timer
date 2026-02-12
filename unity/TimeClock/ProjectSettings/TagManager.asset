@@ -17,17 +17,17 @@ TagManager:
   - 
   - 
   - GroundDecoration
-  - 
-  - 
-  - Buildings
-  - 
-  - 
-  - BuildingsTop
-  - 
-  - 
+  - Buildings_F0
+  - Buildings_F1
+  - Buildings_F2
+  - Buildings_F3
+  - Buildings_F4
+  - BuildingsTop_F0
+  - BuildingsTop_F1
+  - BuildingsTop_F2
+  - BuildingsTop_F3
+  - BuildingsTop_F4
   - Effects
-  - 
-  - 
   - 
   - 
   - 
@@ -40,4 +40,43 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Ground
+    uniqueID: 1000
+    locked: 0
+  - name: GroundDecoration
+    uniqueID: 1001
+    locked: 0
+  - name: Buildings_F0
+    uniqueID: 1002
+    locked: 0
+  - name: Buildings_F1
+    uniqueID: 4228622031
+    locked: 0
+  - name: Buildings_F2
+    uniqueID: 2733136509
+    locked: 0
+  - name: Buildings_F3
+    uniqueID: 313215691
+    locked: 0
+  - name: Buildings_F4
+    uniqueID: 1343302759
+    locked: 0
+  - name: BuildingsTop_F0
+    uniqueID: 1003
+    locked: 0
+  - name: BuildingsTop_F1
+    uniqueID: 913973127
+    locked: 0
+  - name: BuildingsTop_F2
+    uniqueID: 1790914775
+    locked: 0
+  - name: BuildingsTop_F3
+    uniqueID: 2462613017
+    locked: 0
+  - name: BuildingsTop_F4
+    uniqueID: 2986032089
+    locked: 0
+  - name: Effects
+    uniqueID: 1004
     locked: 0

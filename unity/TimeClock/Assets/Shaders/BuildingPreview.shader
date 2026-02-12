@@ -10,13 +10,99 @@ Shader "Custom/BuildingPreview"
         _PulseMin ("Pulse Min Alpha", Float) = 0.3
         _PulseMax ("Pulse Max Alpha", Float) = 0.7
         _Color ("Color", Color) = (1,1,1,1)
-        [MaterialToggle] PixelSnap ("Pixel snap", Float) = 0
-        [HideInInspector] _RendererColor ("RendererColor", Color) = (1,1,1,1)
-        [HideInInspector] _Flip ("Flip", Vector) = (1,1,1,1)
-        [PerRendererData] _AlphaTex ("External Alpha", 2D) = "white" {}
-        [PerRendererData] _EnableExternalAlpha ("Enable External Alpha", Float) = 0
     }
 
+    SubShader
+    {
+        Tags
+        {
+            "Queue"="Transparent+100"
+            "IgnoreProjector"="True"
+            "RenderType"="Transparent"
+            "PreviewType"="Plane"
+            "CanUseSpriteAtlas"="True"
+            "RenderPipeline"="UniversalPipeline"
+        }
+
+        Cull Off
+        Lighting Off
+        ZWrite Off
+        Blend SrcAlpha OneMinusSrcAlpha
+
+        Pass
+        {
+            HLSLPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma multi_compile_instancing
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            struct Attributes
+            {
+                float4 positionOS : POSITION;
+                float2 uv         : TEXCOORD0;
+                float4 color      : COLOR;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            struct Varyings
+            {
+                float4 positionCS : SV_POSITION;
+                float2 uv         : TEXCOORD0;
+                float4 color      : COLOR;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            TEXTURE2D(_MainTex);
+            SAMPLER(sampler_MainTex);
+
+            CBUFFER_START(UnityPerMaterial)
+                half4 _PreviewColor;
+                half4 _InvalidColor;
+                float _IsValid;
+                float _PulseSpeed;
+                float _PulseMin;
+                float _PulseMax;
+                half4 _Color;
+            CBUFFER_END
+
+            Varyings vert(Attributes IN)
+            {
+                Varyings OUT;
+                UNITY_SETUP_INSTANCE_ID(IN);
+                UNITY_TRANSFER_INSTANCE_ID(IN, OUT);
+
+                OUT.positionCS = TransformObjectToHClip(IN.positionOS.xyz);
+                OUT.uv = IN.uv;
+                OUT.color = IN.color * _Color;
+                return OUT;
+            }
+
+            half4 frag(Varyings IN) : SV_Target
+            {
+                half4 texColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv);
+
+                // 选择颜色
+                half4 tintColor = _IsValid > 0.5 ? _PreviewColor : _InvalidColor;
+
+                // 脉冲效果
+                float pulse = lerp(_PulseMin, _PulseMax,
+                    (sin(_Time.y * _PulseSpeed * 3.14159 * 2) + 1) * 0.5);
+
+                // 应用颜色和透明度
+                // 只用 texColor.a 控制形状裁剪，pulse 控制呼吸透明度
+                half4 result;
+                result.rgb = tintColor.rgb;
+                result.a = texColor.a * IN.color.a * pulse;
+
+                return result;
+            }
+            ENDHLSL
+        }
+    }
+
+    // 内置管线 Fallback（兼容非 URP 环境）
     SubShader
     {
         Tags
@@ -36,36 +122,61 @@ Shader "Custom/BuildingPreview"
         Pass
         {
             CGPROGRAM
-            #pragma vertex SpriteVert
-            #pragma fragment PreviewFrag
-            #pragma target 2.0
+            #pragma vertex vert
+            #pragma fragment frag
             #pragma multi_compile_instancing
-            #pragma multi_compile_local _ PIXELSNAP_ON
-            #pragma multi_compile _ ETC1_EXTERNAL_ALPHA
-            #include "UnitySprites.cginc"
 
+            #include "UnityCG.cginc"
+
+            struct appdata
+            {
+                float4 vertex : POSITION;
+                float2 uv     : TEXCOORD0;
+                float4 color  : COLOR;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            struct v2f
+            {
+                float4 pos   : SV_POSITION;
+                float2 uv    : TEXCOORD0;
+                float4 color : COLOR;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+
+            sampler2D _MainTex;
             fixed4 _PreviewColor;
             fixed4 _InvalidColor;
             float _IsValid;
             float _PulseSpeed;
             float _PulseMin;
             float _PulseMax;
+            fixed4 _Color;
 
-            fixed4 PreviewFrag(v2f IN) : SV_Target
+            v2f vert(appdata IN)
             {
-                fixed4 texColor = SampleSpriteTexture(IN.texcoord);
+                v2f OUT;
+                UNITY_SETUP_INSTANCE_ID(IN);
+                UNITY_TRANSFER_INSTANCE_ID(IN, OUT);
 
-                // 选择颜色
+                OUT.pos = UnityObjectToClipPos(IN.vertex);
+                OUT.uv = IN.uv;
+                OUT.color = IN.color * _Color;
+                return OUT;
+            }
+
+            fixed4 frag(v2f IN) : SV_Target
+            {
+                fixed4 texColor = tex2D(_MainTex, IN.uv);
+
                 fixed4 tintColor = _IsValid > 0.5 ? _PreviewColor : _InvalidColor;
 
-                // 脉冲效果
                 float pulse = lerp(_PulseMin, _PulseMax,
                     (sin(_Time.y * _PulseSpeed * 3.14159 * 2) + 1) * 0.5);
 
-                // 应用颜色和透明度
                 fixed4 result;
                 result.rgb = tintColor.rgb;
-                result.a = texColor.a * pulse * tintColor.a;
+                result.a = texColor.a * IN.color.a * pulse;
 
                 return result;
             }

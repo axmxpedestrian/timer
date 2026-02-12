@@ -294,19 +294,22 @@ namespace PomodoroTimer.UI
             isEditMode = false;
             editingTask = null;
             selectedColorIndex = 0;
-            
+
             // 清空输入
             if (taskNameInput != null)
             {
                 taskNameInput.text = "";
             }
-            
+
             // 隐藏删除按钮
             deleteTaskButton?.gameObject.SetActive(false);
-            
+
             // 更新颜色选择
             UpdateColorSelection();
-            
+
+            // 新建任务时颜色按钮始终可用
+            SetColorButtonsInteractable(true);
+
             // 显示编辑面板
             taskEditPanel?.SetActive(true);
         }
@@ -525,19 +528,23 @@ namespace PomodoroTimer.UI
             isEditMode = true;
             editingTask = task;
             selectedColorIndex = task.colorIndex;
-            
+
             // 填充输入框
             if (taskNameInput != null)
             {
                 taskNameInput.text = task.taskName;
             }
-            
+
             // 显示删除按钮
             deleteTaskButton?.gameObject.SetActive(true);
-            
+
             // 更新颜色选择
             UpdateColorSelection();
-            
+
+            // 【新增】计时器运行中时禁用颜色按钮
+            bool timerBusy = IsTimerBusy();
+            SetColorButtonsInteractable(!timerBusy);
+
             // 显示编辑面板
             taskEditPanel?.SetActive(true);
         }
@@ -582,18 +589,41 @@ namespace PomodoroTimer.UI
             {
                 var btn = colorButtons[i];
                 if (btn == null) continue;
-                
+
                 // 可以通过改变边框或缩放来显示选中状态
                 var outline = btn.GetComponent<Outline>();
                 if (outline != null)
                 {
                     outline.enabled = (i == selectedColorIndex);
                 }
-                
+
                 // 或者改变缩放
-                btn.transform.localScale = (i == selectedColorIndex) 
-                    ? Vector3.one * 1.2f 
+                btn.transform.localScale = (i == selectedColorIndex)
+                    ? Vector3.one * 1.2f
                     : Vector3.one;
+            }
+        }
+
+        /// <summary>
+        /// 检查计时器是否正在运行或暂停中（非空闲状态）
+        /// </summary>
+        private bool IsTimerBusy()
+        {
+            var timer = PomodoroTimerCore.Instance;
+            return timer != null && timer.CurrentState != TimerState.Idle;
+        }
+
+        /// <summary>
+        /// 设置颜色按钮的可交互状态
+        /// </summary>
+        private void SetColorButtonsInteractable(bool interactable)
+        {
+            for (int i = 0; i < colorButtons.Length; i++)
+            {
+                if (colorButtons[i] != null)
+                {
+                    colorButtons[i].interactable = interactable;
+                }
             }
         }
     }

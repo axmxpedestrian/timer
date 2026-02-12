@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections;
 using System.Collections.Generic;
 using PomodoroTimer.Map.Data;
 using PomodoroTimer.Map.Sprite2D;
@@ -29,6 +30,8 @@ namespace PomodoroTimer.UI.Building
         [SerializeField] private GameObject categoryButtonPrefab;
         [SerializeField] private Color categoryNormalColor = new Color(0.3f, 0.3f, 0.3f);
         [SerializeField] private Color categorySelectedColor = new Color(0.2f, 0.6f, 0.2f);
+        [Tooltip("分类图标，顺序：全部、建筑、道路、自然、设施、结构")]
+        [SerializeField] private Sprite[] categoryIcons;
 
         [Header("建造物列表")]
         [SerializeField] private VirtualScrollView buildingScrollView;
@@ -84,6 +87,9 @@ namespace PomodoroTimer.UI.Building
 
         private void Start()
         {
+            // 防止重复实例（Destroy是延迟执行的，Start仍会被调用）
+            if (Instance != this) return;
+
             Initialize();
         }
 
@@ -143,15 +149,8 @@ namespace PomodoroTimer.UI.Building
             // 创建分类按钮
             CreateCategoryButtons();
 
-            // 加载建造物数据
-            if (loadAllOnStart)
-            {
-                LoadAllBuildingData();
-            }
-            else
-            {
-                LoadBuildingDataByTechLevel(currentTechLevel);
-            }
+            // 延迟加载建造物数据，确保 ModularBuildingManager 已完成初始化
+            StartCoroutine(DelayedLoadBuildingData());
 
             // 初始隐藏面板
             if (panelRoot != null)
@@ -168,6 +167,33 @@ namespace PomodoroTimer.UI.Building
             UpdateHintText("点击建造物开始放置");
         }
 
+        /// <summary>
+        /// 延迟加载建造物数据，等待其他管理器初始化完成
+        /// </summary>
+        private IEnumerator DelayedLoadBuildingData()
+        {
+            // 等待一帧，确保所有 Start() 都已执行完毕
+            yield return null;
+
+            // 等待 ModularBuildingManager 就绪
+            while (ModularBuildingManager.Instance == null)
+            {
+                yield return null;
+            }
+
+            // 加载建造物数据
+            if (loadAllOnStart)
+            {
+                LoadAllBuildingData();
+            }
+            else
+            {
+                LoadBuildingDataByTechLevel(currentTechLevel);
+            }
+
+            Debug.Log($"[BuildingPanelUI] 建造物数据加载完成，共 {allBuildingData.Count} 项");
+        }
+
         #region 分类按钮
 
         /// <summary>
@@ -176,6 +202,15 @@ namespace PomodoroTimer.UI.Building
         private void CreateCategoryButtons()
         {
             if (categoryButtonContainer == null || categoryButtonPrefab == null) return;
+
+            // 清除旧按钮，防止重复生成
+            foreach (var btn in categoryButtons)
+            {
+                if (btn != null)
+                    Destroy(btn.gameObject);
+            }
+            categoryButtons.Clear();
+            categoryButtonImages.Clear();
 
             // 定义要显示的分类
             BuildingCategory[] categories = new BuildingCategory[]
@@ -203,6 +238,26 @@ namespace PomodoroTimer.UI.Building
                 if (text != null)
                 {
                     text.text = categoryNames[i];
+                }
+
+                // 设置分类图标
+                var iconTransform = btnObj.transform.Find("Image");
+                if (iconTransform != null)
+                {
+                    var iconImage = iconTransform.GetComponent<Image>();
+                    if (iconImage != null)
+                    {
+                        if (categoryIcons != null && i < categoryIcons.Length && categoryIcons[i] != null)
+                        {
+                            iconImage.sprite = categoryIcons[i];
+                            iconImage.color = Color.white;
+                        }
+                        else
+                        {
+                            // 没有配置图标时隐藏图标Image，避免显示默认白图
+                            iconImage.enabled = false;
+                        }
+                    }
                 }
 
                 int index = i;
@@ -386,6 +441,12 @@ namespace PomodoroTimer.UI.Building
         {
             if (isPanelOpen || isAnimating) return;
 
+            // 如果正在销毁模式，先退出
+            if (DemolishController.Instance != null && DemolishController.Instance.IsDemolishMode)
+            {
+                DemolishController.Instance.ExitDemolishMode();
+            }
+
             isPanelOpen = true;
             targetY = defaultY;
             isAnimating = true;
@@ -478,17 +539,8 @@ namespace PomodoroTimer.UI.Building
             var placementController = BuildingPlacementController.Instance;
             if (placementController == null || !placementController.IsPlacing) return;
 
-            // Q键逆时针旋转
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                placementController.SetRotation(placementController.CurrentRotation - 90);
-            }
-
-            // E键顺时针旋转
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                placementController.SetRotation(placementController.CurrentRotation + 90);
-            }
+            // Q/E 旋转由 BuildingPlacementController.HandleInput() 统一处理，
+            // 此处不再重复监听，避免同一帧内旋转两次。
 
             // ESC取消
             if (Input.GetKeyDown(KeyCode.Escape))
@@ -512,6 +564,17 @@ namespace PomodoroTimer.UI.Building
             {
                 Debug.Log($"成功放置建筑: {selectedBuilding.buildingName}");
 
+                // 注册建筑资源生产器
+                var placementController = BuildingPlacementController.Instance;
+                if (placementController?.LastPlacedBuilding != null &&
+                    BuildingResourceSystemManager.Instance != null)
+                {
+                    var building = placementController.LastPlacedBuilding;
+                    BuildingResourceSystemManager.Instance.RegisterBuilding(
+                        building.InstanceId,
+                        selectedBuilding.blueprint.blueprintId);
+                }
+
                 // 刷新可负担状态
                 RefreshAffordableState();
 
@@ -519,7 +582,6 @@ namespace PomodoroTimer.UI.Building
                 if (selectedBuilding.blueprint.CanAfford())
                 {
                     // 继续放置同一建筑
-                    var placementController = BuildingPlacementController.Instance;
                     if (placementController != null)
                     {
                         placementController.StartPlacement(selectedBuilding.blueprint);

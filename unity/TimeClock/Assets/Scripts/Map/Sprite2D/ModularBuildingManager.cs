@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections.Generic;
+using PomodoroTimer.Core;
 using PomodoroTimer.Map.Data;
+using PomodoroTimer.Resource;
 
 namespace PomodoroTimer.Map.Sprite2D
 {
@@ -52,6 +54,26 @@ namespace PomodoroTimer.Map.Sprite2D
         {
             InitializePool();
             InitializeBlueprintDict();
+
+            // 初始化完成后，主动从存档加载建筑数据
+            // 解决：代码热重载/场景重载后 Manager 被重新创建导致建筑丢失
+            TryLoadFromSaveData();
+        }
+
+        /// <summary>
+        /// 尝试从 DataManager 的存档中加载建筑数据
+        /// </summary>
+        private void TryLoadFromSaveData()
+        {
+            var dataManager = DataManager.Instance;
+            if (dataManager == null) return;
+
+            var saveData = dataManager.GetBuildingSystemSaveData();
+            if (saveData != null && saveData.buildings != null && saveData.buildings.Count > 0)
+            {
+                LoadFromSaveData(saveData);
+                Debug.Log($"[ModularBuildingManager] 从存档恢复了 {activeBuildings.Count} 个建筑");
+            }
         }
 
         private void OnDestroy()
@@ -196,6 +218,9 @@ namespace PomodoroTimer.Map.Sprite2D
         {
             if (!activeBuildings.TryGetValue(buildingId, out var building))
                 return false;
+
+            // 注销资源生产器
+            BuildingResourceSystemManager.Instance?.UnregisterBuilding(buildingId);
 
             building.OnStateChanged -= HandleBuildingStateChanged;
             UnregisterOccupiedCells(building);
@@ -441,6 +466,13 @@ namespace PomodoroTimer.Map.Sprite2D
 
                 activeBuildings[building.InstanceId] = building;
                 RegisterOccupiedCells(building);
+
+                // 注册到资源生产系统
+                if (BuildingResourceSystemManager.Instance != null)
+                {
+                    BuildingResourceSystemManager.Instance.RegisterBuilding(
+                        building.InstanceId, buildingSave.blueprintId);
+                }
             }
 
             Debug.Log($"[ModularBuildingManager] 已加载 {activeBuildings.Count} 个建筑");

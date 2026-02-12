@@ -13,20 +13,50 @@ MonoBehaviour:
   m_Name: House_Small
   m_EditorClassIdentifier: 
   blueprintId: 1
-  buildingName: "\u5C0F\u623F\u5B50"
-  category: 0
-  previewIcon: {fileID: 0}
+  buildingName: "\u5C0F\u5C4B"
+  category: 1
+  previewIcon: {fileID: -1154542849751525046, guid: 801c5238a20694a46b6baf92ea45fc90, type: 3}
   description: "\u2014\u4E2A\u6E29\u99A8\u7684\u5C0F\u623F\u5B50"
   baseSize: {x: 1, y: 1}
   occupancyMask:
     width: 1
     height: 1
     cells: 01
-  heightLevel: 1
+  heightLevel: 0
   yOffset: 0
   floors: []
   defaultFloorCount: 1
   partSlots:
+  - slotType: 0
+    slotId: floor_main
+    isRequired: 1
+    allowMultiple: 0
+    maxCount: 2
+    availableVariants:
+    - variantId: floor1
+      frames:
+      - {fileID: -8423205429194236295, guid: 11f9a85cb170e694b91064ca86af915e, type: 3}
+      directionalViews: []
+      isTintable: 0
+      defaultTint: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
+      localOffset: {x: 0, y: 0}
+      sortingOrderOffset: 0
+    defaultVariantIndex: 0
+  - slotType: 1
+    slotId: frame
+    isRequired: 1
+    allowMultiple: 0
+    maxCount: 2
+    availableVariants:
+    - variantId: frame1
+      frames:
+      - {fileID: -110350352280889258, guid: 980d37724bbc1574bad7d055021e846c, type: 3}
+      directionalViews: []
+      isTintable: 0
+      defaultTint: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
+      localOffset: {x: 0, y: 0}
+      sortingOrderOffset: 0
+    defaultVariantIndex: 0
   - slotType: 2
     slotId: walls_main
     isRequired: 1
@@ -34,54 +64,63 @@ MonoBehaviour:
     maxCount: 2
     availableVariants:
     - variantId: brick1
-      frames: []
-      isTintable: 1
+      frames:
+      - {fileID: 6496288981967892675, guid: f4f83a1b6f90f1845adf519a486d94ad, type: 3}
+      directionalViews: []
+      isTintable: 0
       defaultTint: {r: 0.3820755, g: 0.61625296, b: 1, a: 1}
       localOffset: {x: 0, y: 0}
       sortingOrderOffset: 0
     - variantId: brick2
       frames: []
+      directionalViews: []
       isTintable: 1
       defaultTint: {r: 1, g: 1, b: 1, a: 0}
       localOffset: {x: 0, y: 0}
       sortingOrderOffset: 0
     defaultVariantIndex: 0
-  - slotType: 5
-    slotId: 1
-    isRequired: 1
-    allowMultiple: 0
-    maxCount: 0
-    availableVariants:
-    - variantId: roof_tile
-      frames: []
-      isTintable: 1
-      defaultTint: {r: 0.57254905, g: 0.2784314, b: 0.12941177, a: 1}
-      localOffset: {x: 0, y: 0.5}
-      sortingOrderOffset: 10
-    defaultVariantIndex: 0
   - slotType: 3
-    slotId: 2
-    isRequired: 0
-    allowMultiple: 0
-    maxCount: 2
-    availableVariants:
-    - variantId: window1
-      frames: []
-      isTintable: 1
-      defaultTint: {r: 0.4198113, g: 0.8048461, b: 1, a: 1}
-      localOffset: {x: 0, y: 0.2}
-      sortingOrderOffset: 10
-    defaultVariantIndex: 0
-  - slotType: 4
-    slotId: 3
+    slotId: doors_main
     isRequired: 1
     allowMultiple: 0
     maxCount: 2
     availableVariants:
     - variantId: door1
-      frames: []
-      isTintable: 1
+      frames:
+      - {fileID: 1754634435024665996, guid: 1a7b797571b7e1d429809752d78b53f0, type: 3}
+      directionalViews: []
+      isTintable: 0
       defaultTint: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
+      localOffset: {x: 0, y: 0}
+      sortingOrderOffset: 0
+    defaultVariantIndex: 0
+  - slotType: 4
+    slotId: windows_main
+    isRequired: 1
+    allowMultiple: 0
+    maxCount: 2
+    availableVariants:
+    - variantId: window1
+      frames:
+      - {fileID: -4661155033601648994, guid: b82cf2b17cf698b4f8d090abe455d0ae, type: 3}
+      directionalViews: []
+      isTintable: 0
+      defaultTint: {r: 0.4198113, g: 0.8048461, b: 1, a: 1}
+      localOffset: {x: 0, y: 0}
+      sortingOrderOffset: 0
+    defaultVariantIndex: 0
+  - slotType: 5
+    slotId: roof_main
+    isRequired: 1
+    allowMultiple: 0
+    maxCount: 0
+    availableVariants:
+    - variantId: roof_tile
+      frames:
+      - {fileID: 7482260377884284017, guid: b097294c53eb29643a2fd7271c219a08, type: 3}
+      directionalViews: []
+      isTintable: 0
+      defaultTint: {r: 0.57254905, g: 0.2784314, b: 0.12941177, a: 1}
       localOffset: {x: 0, y: 0}
       sortingOrderOffset: 0
     defaultVariantIndex: 0
@@ -92,7 +131,13 @@ MonoBehaviour:
   clickSound: {fileID: 0}
   placeSound: {fileID: 0}
   ambientSound: {fileID: 0}
-  buildCost: 0
-  buildTimeSeconds: 0
+  buildCosts:
+  - resourceType: 0
+    amount: 20
+  - resourceType: 1
+    amount: 10
+  buildTimeSeconds: 5
   maxHealth: 100
   isWalkable: 0
+  techLevel: 0
+  unlockConditionDesc: 

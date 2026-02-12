@@ -22,19 +22,6 @@ namespace PomodoroTimer.Map.Data
     }
 
     /// <summary>
-    /// 建筑消耗资源配置
-    /// </summary>
-    [System.Serializable]
-    public class BuildingCostEntry
-    {
-        [Tooltip("资源类型")]
-        public ResourceType resourceType;
-
-        [Tooltip("消耗数量")]
-        public long amount;
-    }
-
-    /// <summary>
     /// 建筑特效配置
     /// </summary>
     [System.Serializable]
@@ -143,11 +130,8 @@ namespace PomodoroTimer.Map.Data
         public AudioClip ambientSound;
 
         [Header("游戏属性")]
-        [Tooltip("建造费用（旧版，建议使用buildCosts）")]
-        public int buildCost;
-
         [Tooltip("建造消耗资源列表")]
-        public BuildingCostEntry[] buildCosts;
+        public ResourceCost[] buildCosts;
 
         [Tooltip("建造时间（秒）")]
         public int buildTimeSeconds;
@@ -232,15 +216,7 @@ namespace PomodoroTimer.Map.Data
         public bool CanAfford()
         {
             if (buildCosts == null || buildCosts.Length == 0)
-            {
-                // 兼容旧版buildCost
-                if (buildCost > 0)
-                {
-                    var rm = ResourceManager.Instance;
-                    return rm != null && rm.GetAmount(ResourceType.Coin) >= buildCost;
-                }
-                return true;
-            }
+                return true;  // 免费建筑
 
             var resourceManager = ResourceManager.Instance;
             if (resourceManager == null) return false;
@@ -264,23 +240,8 @@ namespace PomodoroTimer.Map.Data
             if (resourceManager == null) return false;
 
             if (buildCosts == null || buildCosts.Length == 0)
-            {
-                // 兼容旧版buildCost
-                if (buildCost > 0)
-                {
-                    return resourceManager.ConsumeResource(ResourceType.Coin, buildCost, "Building");
-                }
-                return true;
-            }
+                return true;  // 免费建筑
 
-            // 先检查所有资源是否足够
-            foreach (var cost in buildCosts)
-            {
-                if (resourceManager.GetAmount(cost.resourceType) < cost.amount)
-                    return false;
-            }
-
-            // 消耗所有资源
             foreach (var cost in buildCosts)
             {
                 resourceManager.ConsumeResource(cost.resourceType, cost.amount, "Building");

@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dbff9c76d85bdc4fbba326b89d03d92, type: 3}
+  m_Name: Farmland
+  m_EditorClassIdentifier: 
+  blueprintId: 2
+  buildingName: "\u519C\u7530"
+  category: 3
+  previewIcon: {fileID: 5707395175976934104, guid: e1badd667e47b494494eace3d73173fb, type: 3}
+  description: "\u9EA6\u7530"
+  baseSize: {x: 1, y: 1}
+  occupancyMask:
+    width: 1
+    height: 1
+    cells: 01
+  heightLevel: 0
+  yOffset: 0
+  floors: []
+  defaultFloorCount: 1
+  partSlots:
+  - slotType: 0
+    slotId: floor_main
+    isRequired: 1
+    allowMultiple: 0
+    maxCount: 2
+    availableVariants:
+    - variantId: floor1
+      frames:
+      - {fileID: 5707395175976934104, guid: e1badd667e47b494494eace3d73173fb, type: 3}
+      isTintable: 0
+      defaultTint: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
+      localOffset: {x: 0, y: 0}
+      sortingOrderOffset: 0
+    defaultVariantIndex: 0
+  defaultParts: []
+  frameRate: 8
+  hasIdleAnimation: 0
+  effects: []
+  clickSound: {fileID: 0}
+  placeSound: {fileID: 0}
+  ambientSound: {fileID: 0}
+  buildCosts:
+  - resourceType: 0
+    amount: 5
+  buildTimeSeconds: 5
+  maxHealth: 100
+  isWalkable: 0
+  techLevel: 0
+  unlockConditionDesc: 

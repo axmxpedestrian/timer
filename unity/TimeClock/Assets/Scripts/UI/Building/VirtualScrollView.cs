@@ -66,7 +66,22 @@ namespace PomodoroTimer.UI.Building
 
             var viewport = scrollRect.viewport ?? scrollRect.GetComponent<RectTransform>();
             viewportWidth = viewport.rect.width;
-            visibleCount = Mathf.CeilToInt(viewportWidth / (itemWidth + itemSpacing)) + bufferCount * 2;
+
+            // 布局尚未完成时 rect.width 可能为 0，使用 fallback
+            if (viewportWidth <= 0)
+            {
+                viewportWidth = ((RectTransform)transform).rect.width;
+            }
+
+            if (viewportWidth > 0)
+            {
+                visibleCount = Mathf.CeilToInt(viewportWidth / (itemWidth + itemSpacing)) + bufferCount * 2;
+            }
+            else
+            {
+                // 仍然为 0，给一个安全的默认值
+                visibleCount = 6 + bufferCount * 2;
+            }
 
             Log($"视口宽度: {viewportWidth}, 可见数量: {visibleCount}");
         }
@@ -240,9 +255,14 @@ namespace PomodoroTimer.UI.Building
             var rt = item.GetComponent<RectTransform>();
             if (rt != null)
             {
+                // 强制锚点为左侧拉伸，确保定位正确
+                rt.anchorMin = new Vector2(0, 0);
+                rt.anchorMax = new Vector2(0, 1);
+                rt.pivot = new Vector2(0, 0.5f);
+
                 float x = index * (itemWidth + itemSpacing);
                 rt.anchoredPosition = new Vector2(x, 0);
-                rt.sizeDelta = new Vector2(itemWidth, rt.sizeDelta.y);
+                rt.sizeDelta = new Vector2(itemWidth, 0);
             }
 
             // 绑定数据

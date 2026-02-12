@@ -56,7 +56,7 @@ namespace PomodoroTimer.Resource
             {
                 if (config != null)
                 {
-                    configMap[config.blueprintId] = config;
+                    configMap[config.BlueprintId] = config;
                 }
             }
 
@@ -123,30 +123,6 @@ namespace PomodoroTimer.Resource
         public BuildingResourceProducer GetProducer(int instanceId)
         {
             return activeProducers.TryGetValue(instanceId, out var producer) ? producer : null;
-        }
-
-        /// <summary>
-        /// 检查是否能建造建筑
-        /// </summary>
-        public bool CanBuildBuilding(int blueprintId)
-        {
-            var config = GetConfig(blueprintId);
-            if (config == null) return false;
-
-            var costs = config.GetCostForLevel(1);
-            return ResourceManager.Instance?.HasEnough(costs) ?? false;
-        }
-
-        /// <summary>
-        /// 消耗建造资源
-        /// </summary>
-        public bool ConsumeBuildCost(int blueprintId)
-        {
-            var config = GetConfig(blueprintId);
-            if (config == null) return false;
-
-            var costs = config.GetCostForLevel(1);
-            return ResourceManager.Instance?.ConsumeResources(costs, $"Build_{blueprintId}") ?? false;
         }
 
         /// <summary>
@@ -246,7 +222,7 @@ namespace PomodoroTimer.Resource
         public void RegisterConfig(BuildingResourceConfig config)
         {
             if (config == null) return;
-            configMap[config.blueprintId] = config;
+            configMap[config.BlueprintId] = config;
         }
     }
 }

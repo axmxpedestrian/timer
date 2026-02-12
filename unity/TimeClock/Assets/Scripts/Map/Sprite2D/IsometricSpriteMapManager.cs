@@ -50,6 +50,7 @@ namespace PomodoroTimer.Map.Sprite2D
 
         private void Start()
         {
+            IsometricSortingHelper.ValidateMapSize(mapWidth, mapHeight);
             SetupCamera();
             CalculateMapBounds();
             GenerateMap();
@@ -206,6 +207,7 @@ namespace PomodoroTimer.Map.Sprite2D
         public float GetTileWidth() => tileWidth;
         public float GetTileHeight() => tileHeight;
         public float GetPixelsPerUnit() => pixelsPerUnit;
+        public Sprite GetDefaultTileSprite() => defaultTileSprite;
 
         public void SetCameraPosition(Vector3 pos)
         {
