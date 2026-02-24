@@ -15,7 +15,7 @@ MonoBehaviour:
   resourceType: 2
   resourceName: Laber
   description: "\u52B3\u52A8\u529B"
-  icon: {fileID: -3752389704061159439, guid: 62812012cbd9c6544aa2868cb4f80e85, type: 3}
+  icon: {fileID: -1902480550359862621, guid: 9ac636555a29e864b958c4a09f5a9bbb, type: 3}
   displayOrder: 3
   iconColor: {r: 1, g: 1, b: 1, a: 1}
   unlockedByDefault: 0

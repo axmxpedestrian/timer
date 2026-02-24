@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using PomodoroTimer.Map.Data;
 using PomodoroTimer.Resource;
@@ -9,7 +10,7 @@ namespace PomodoroTimer.UI.Building
     /// <summary>
     /// 建造物项UI（用于虚拟滚动复用）
     /// </summary>
-    public class BuildingItemUI : MonoBehaviour
+    public class BuildingItemUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [Header("UI引用")]
         [SerializeField] private Image iconImage;
@@ -206,6 +207,31 @@ namespace PomodoroTimer.UI.Building
             if (currentData != null && currentData.isUnlocked)
             {
                 onClickCallback?.Invoke(currentData, dataIndex);
+            }
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            if (currentData != null && BuildingTooltipUI.Instance != null)
+            {
+                BuildingTooltipUI.Instance.RequestShow(currentData);
+            }
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            if (currentData != null && BuildingTooltipUI.Instance != null)
+            {
+                BuildingTooltipUI.Instance.RequestHide(currentData);
+            }
+        }
+
+        private void OnDisable()
+        {
+            // 虚拟滚动复用时隐藏 Tooltip，防止残留
+            if (BuildingTooltipUI.Instance != null)
+            {
+                BuildingTooltipUI.Instance.RequestHide(currentData);
             }
         }
     }

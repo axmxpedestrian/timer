@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7b94b11e2f38ca848a55fecd1816e76f
+guid: ed1b3205731465b4da5897aa56549ccd
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 639065107830999925
+  platformSettingsDirtyTick: 639065312915915413
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -122,9 +122,9 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Foundation_256x256_270
+  - name: Over_256x256_270
     originalName: 
-    pivot: {x: 0.5, y: -0.33333334}
+    pivot: {x: 0.5, y: -0.21621622}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
@@ -132,8 +132,8 @@ ScriptedImporter:
       x: 4
       y: 4
       width: 256
-      height: 96
-    spriteID: a919e354d45503b41aebc839682435fc
+      height: 148
+    spriteID: 70b00dd9bbb6f074296aa99bdf81d5b0
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -145,21 +145,21 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: 1384640806
-    name: Foundation_256x256_270
+    guid: 147209519
+    name: Over_256x256_270
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: Foundation_256x256_270
+    - name: Over_256x256_270
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
         x: 0
         y: 32
         width: 256
-        height: 96
-      spriteId: a919e354d45503b41aebc839682435fc
+        height: 148
+      spriteId: 70b00dd9bbb6f074296aa99bdf81d5b0
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -215,4 +215,4 @@ ScriptedImporter:
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 256, y: 256}
-  previousTextureSize: {x: 512, y: 128}
+  previousTextureSize: {x: 512, y: 256}

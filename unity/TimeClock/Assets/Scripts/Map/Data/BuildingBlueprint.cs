@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 using PomodoroTimer.Resource;
 
 namespace PomodoroTimer.Map.Data
@@ -153,6 +154,52 @@ namespace PomodoroTimer.Map.Data
         [Tooltip("解锁条件描述")]
         [TextArea(1, 2)]
         public string unlockConditionDesc;
+
+        [Header("标签分类")]
+        [Tooltip("建筑类型标签（如：住宅、商铺、仓库）")]
+        public List<string> buildingTypeTags = new List<string>();
+
+        [Tooltip("风格标签（如：中式、欧式、现代）")]
+        public List<string> styleTags = new List<string>();
+
+        [Tooltip("资源消耗类型标签（如：木材、石材、金币）")]
+        public List<string> consumptionTypeTags = new List<string>();
+
+        [Tooltip("资源生成类型标签（如：食物、金币、科技点）")]
+        public List<string> productionTypeTags = new List<string>();
+
+        /// <summary>
+        /// 按分类索引获取对应的标签列表
+        /// 0=建筑类型, 1=风格, 2=资源消耗类型, 3=资源生成类型
+        /// </summary>
+        public List<string> GetTagsByCategory(int categoryIndex)
+        {
+            switch (categoryIndex)
+            {
+                case 0: return buildingTypeTags;
+                case 1: return styleTags;
+                case 2: return consumptionTypeTags;
+                case 3: return productionTypeTags;
+                default: return null;
+            }
+        }
+
+        /// <summary>
+        /// 检查指定分类下是否包含给定标签集合中的任意一个（OR逻辑）
+        /// </summary>
+        public bool HasAnyTag(int categoryIndex, HashSet<string> tags)
+        {
+            if (tags == null || tags.Count == 0) return true;
+
+            var list = GetTagsByCategory(categoryIndex);
+            if (list == null) return false;
+
+            foreach (var tag in list)
+            {
+                if (tags.Contains(tag)) return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// 获取有效的占位掩码
@@ -339,6 +386,14 @@ namespace PomodoroTimer.Map.Data
 
             // 确保默认楼层数至少为1
             defaultFloorCount = Mathf.Max(1, defaultFloorCount);
+
+            // 标签验证警告
+            if (buildingTypeTags == null || buildingTypeTags.Count == 0)
+                Debug.LogWarning($"[BuildingBlueprint] '{buildingName}' 缺少建筑类型标签(buildingTypeTags)", this);
+            if (consumptionTypeTags == null || consumptionTypeTags.Count == 0)
+                Debug.LogWarning($"[BuildingBlueprint] '{buildingName}' 缺少资源消耗类型标签(consumptionTypeTags)", this);
+            if (productionTypeTags == null || productionTypeTags.Count == 0)
+                Debug.LogWarning($"[BuildingBlueprint] '{buildingName}' 缺少资源生成类型标签(productionTypeTags)", this);
         }
 #endif
     }

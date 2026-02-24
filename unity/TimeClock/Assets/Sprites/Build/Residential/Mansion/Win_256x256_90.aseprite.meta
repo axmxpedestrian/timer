@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7b94b11e2f38ca848a55fecd1816e76f
+guid: f07011a6b52da3e458ee35be09727203
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 639065107830999925
+  platformSettingsDirtyTick: 639065312949239951
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -122,18 +122,18 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Foundation_256x256_270
+  - name: Win_256x256_90
     originalName: 
-    pivot: {x: 0.5, y: -0.33333334}
+    pivot: {x: 0.42222223, y: -0.63529414}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 256
-      height: 96
-    spriteID: a919e354d45503b41aebc839682435fc
+      width: 135
+      height: 85
+    spriteID: ab284ee5e34c98f4a93d936eeaf89c05
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -145,21 +145,21 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: 1384640806
-    name: Foundation_256x256_270
+    guid: 1517090425
+    name: Win_256x256_90
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: Foundation_256x256_270
+    - name: Win_256x256_90
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
-        x: 0
-        y: 32
-        width: 256
-        height: 96
-      spriteId: a919e354d45503b41aebc839682435fc
+        x: 71
+        y: 54
+        width: 135
+        height: 85
+      spriteId: ab284ee5e34c98f4a93d936eeaf89c05
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -215,4 +215,4 @@ ScriptedImporter:
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 256, y: 256}
-  previousTextureSize: {x: 512, y: 128}
+  previousTextureSize: {x: 256, y: 128}

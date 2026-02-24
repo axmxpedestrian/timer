@@ -25,6 +25,9 @@ namespace PomodoroTimer.UI.Building
         [SerializeField] private float slideSpeed = 800f;       // 滑动速度
         [SerializeField] private float hiddenYOffset = -300f;   // 隐藏时的Y偏移
 
+        // 用于控制隐藏时不拦截鼠标事件
+        private CanvasGroup panelCanvasGroup;
+
         [Header("分类按钮")]
         [SerializeField] private Transform categoryButtonContainer;
         [SerializeField] private GameObject categoryButtonPrefab;
@@ -35,6 +38,9 @@ namespace PomodoroTimer.UI.Building
 
         [Header("建造物列表")]
         [SerializeField] private VirtualScrollView buildingScrollView;
+
+        [Header("标签筛选")]
+        [SerializeField] private BuildingTagFilterUI tagFilterUI;
 
         [Header("提示信息")]
         [SerializeField] private TextMeshProUGUI hintText;
@@ -48,6 +54,9 @@ namespace PomodoroTimer.UI.Building
         private List<Button> categoryButtons = new List<Button>();
         private List<Image> categoryButtonImages = new List<Image>();
         private BuildingCategory currentCategory = BuildingCategory.All;
+
+        // 标签筛选
+        private BuildingTagFilter tagFilter;
 
         // 建造物数据
         private List<BuildingItemData> allBuildingData = new List<BuildingItemData>();
@@ -95,6 +104,11 @@ namespace PomodoroTimer.UI.Building
 
         private void OnDestroy()
         {
+            if (tagFilter != null)
+            {
+                tagFilter.OnFilterChanged -= OnTagFilterChanged;
+            }
+
             if (Instance == this)
                 Instance = null;
         }
@@ -126,6 +140,14 @@ namespace PomodoroTimer.UI.Building
         /// </summary>
         private void Initialize()
         {
+            // 确保 panelRoot 上有 CanvasGroup
+            if (panelRoot != null)
+            {
+                panelCanvasGroup = panelRoot.GetComponent<CanvasGroup>();
+                if (panelCanvasGroup == null)
+                    panelCanvasGroup = panelRoot.AddComponent<CanvasGroup>();
+            }
+
             // 记录默认位置
             if (panelTransform != null)
             {
@@ -134,6 +156,9 @@ namespace PomodoroTimer.UI.Building
                 panelTransform.anchoredPosition = new Vector2(
                     panelTransform.anchoredPosition.x, targetY);
             }
+
+            // 初始状态面板关闭，禁止拦截射线
+            SetPanelInteractable(false);
 
             // 绑定按钮事件
             if (toggleButton != null)
@@ -148,6 +173,14 @@ namespace PomodoroTimer.UI.Building
 
             // 创建分类按钮
             CreateCategoryButtons();
+
+            // 初始化标签筛选
+            tagFilter = new BuildingTagFilter();
+            tagFilter.OnFilterChanged += OnTagFilterChanged;
+            if (tagFilterUI != null)
+            {
+                tagFilterUI.Initialize(tagFilter);
+            }
 
             // 延迟加载建造物数据，确保 ModularBuildingManager 已完成初始化
             StartCoroutine(DelayedLoadBuildingData());
@@ -330,6 +363,10 @@ namespace PomodoroTimer.UI.Building
             // 按科技等级排序
             allBuildingData.Sort((a, b) => a.techLevel.CompareTo(b.techLevel));
 
+            // 收集标签
+            if (tagFilter != null)
+                tagFilter.CollectTagsFromBlueprints(manager.GetAllBlueprints());
+
             FilterBuildingsByCategory();
         }
 
@@ -366,6 +403,10 @@ namespace PomodoroTimer.UI.Building
             // 按科技等级排序
             allBuildingData.Sort((a, b) => a.techLevel.CompareTo(b.techLevel));
 
+            // 收集标签
+            if (tagFilter != null)
+                tagFilter.CollectTagsFromBlueprints(manager.GetAllBlueprints());
+
             FilterBuildingsByCategory();
         }
 
@@ -395,11 +436,25 @@ namespace PomodoroTimer.UI.Building
                 }
             }
 
+            // 应用标签筛选
+            if (tagFilter != null && tagFilter.HasActiveFilters())
+            {
+                filteredBuildingData = tagFilter.ApplyFilter(filteredBuildingData);
+            }
+
             // 更新滚动视图
             if (buildingScrollView != null)
             {
                 buildingScrollView.SetData(filteredBuildingData, OnBuildingItemClicked);
             }
+        }
+
+        /// <summary>
+        /// 标签筛选变化回调
+        /// </summary>
+        private void OnTagFilterChanged()
+        {
+            FilterBuildingsByCategory();
         }
 
         /// <summary>
@@ -451,6 +506,9 @@ namespace PomodoroTimer.UI.Building
             targetY = defaultY;
             isAnimating = true;
 
+            // 打开时立即允许交互
+            SetPanelInteractable(true);
+
             // 刷新数据
             RefreshAffordableState();
 
@@ -488,6 +546,24 @@ namespace PomodoroTimer.UI.Building
             if (Mathf.Approximately(newY, targetY))
             {
                 isAnimating = false;
+
+                // 关闭动画结束后禁止拦截射线
+                if (!isPanelOpen)
+                {
+                    SetPanelInteractable(false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 设置面板是否可交互（控制 CanvasGroup 的 blocksRaycasts 和 interactable）
+        /// </summary>
+        private void SetPanelInteractable(bool interactable)
+        {
+            if (panelCanvasGroup != null)
+            {
+                panelCanvasGroup.blocksRaycasts = interactable;
+                panelCanvasGroup.interactable = interactable;
             }
         }
 

@@ -57,6 +57,66 @@ MonoBehaviour:
       localOffset: {x: 0, y: 0}
       sortingOrderOffset: 0
     defaultVariantIndex: 0
+  - slotType: 1
+    slotId: frame_Mansion
+    isRequired: 1
+    allowMultiple: 0
+    maxCount: 4
+    availableVariants:
+    - variantId: frame_Mansion
+      frames:
+      - {fileID: -5304723880251448415, guid: f7ea50002054e80449f439007c4637a5, type: 3}
+      directionalViews:
+      - rotation: 90
+        frames:
+        - {fileID: 764243936937890334, guid: e6fe452d2a5cc854685013f7e4499254, type: 3}
+        localOffset: {x: 0, y: 0}
+        sortingOrderOffsetDelta: 0
+      - rotation: 180
+        frames:
+        - {fileID: 5623312805180940606, guid: b7ff3bcaf2e536a4b90f60e540919c6a, type: 3}
+        localOffset: {x: 0, y: 0}
+        sortingOrderOffsetDelta: 0
+      - rotation: 270
+        frames:
+        - {fileID: 764243936937890334, guid: e6fe452d2a5cc854685013f7e4499254, type: 3}
+        localOffset: {x: 0, y: 0}
+        sortingOrderOffsetDelta: 0
+      isTintable: 0
+      defaultTint: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
+      localOffset: {x: 0, y: 0}
+      sortingOrderOffset: 0
+    defaultVariantIndex: 0
+  - slotType: 4
+    slotId: windows_Mansion
+    isRequired: 1
+    allowMultiple: 0
+    maxCount: 4
+    availableVariants:
+    - variantId: windows_Mansion
+      frames:
+      - {fileID: -5304723880251448415, guid: f7ea50002054e80449f439007c4637a5, type: 3}
+      directionalViews:
+      - rotation: 90
+        frames:
+        - {fileID: 4410394011200893547, guid: f07011a6b52da3e458ee35be09727203, type: 3}
+        localOffset: {x: 0, y: 0}
+        sortingOrderOffsetDelta: 0
+      - rotation: 180
+        frames:
+        - {fileID: 5623312805180940606, guid: b7ff3bcaf2e536a4b90f60e540919c6a, type: 3}
+        localOffset: {x: 0, y: 0}
+        sortingOrderOffsetDelta: 0
+      - rotation: 270
+        frames:
+        - {fileID: 7657364806456038453, guid: b7e32662953c560438e76f447f3ad4df, type: 3}
+        localOffset: {x: 0, y: 0}
+        sortingOrderOffsetDelta: 0
+      isTintable: 0
+      defaultTint: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
+      localOffset: {x: 0, y: 0}
+      sortingOrderOffset: 0
+    defaultVariantIndex: 0
   defaultParts: []
   frameRate: 8
   hasIdleAnimation: 0
@@ -74,3 +134,12 @@ MonoBehaviour:
   isWalkable: 1
   techLevel: 0
   unlockConditionDesc: 
+  buildingTypeTags:
+  - "\u4F4F\u5B85"
+  styleTags:
+  - "\u7530\u56ED"
+  consumptionTypeTags:
+  - "\u4EE3\u5E01"
+  - "\u7CAE\u98DF"
+  productionTypeTags:
+  - "\u52B3\u52A8\u529B"

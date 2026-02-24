@@ -141,3 +141,12 @@ MonoBehaviour:
   isWalkable: 0
   techLevel: 0
   unlockConditionDesc: 
+  buildingTypeTags:
+  - "\u4F4F\u5B85"
+  styleTags:
+  - "\u7B80\u6D01"
+  consumptionTypeTags:
+  - "\u4EE3\u5E01"
+  - "\u7CAE\u98DF"
+  productionTypeTags:
+  - "\u52B3\u52A8\u529B"
