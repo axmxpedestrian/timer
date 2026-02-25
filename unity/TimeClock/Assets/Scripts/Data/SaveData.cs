@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using PomodoroTimer.Resource;
 using PomodoroTimer.Map.Data;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.Data
 {
@@ -75,6 +76,7 @@ namespace PomodoroTimer.Data
         public bool topMost = false;                // 窗口置顶
         public bool fullScreen = false;             // 全屏模式
         public float mapZoomSpeed = 2f;             // 地图滚轮缩放速度
+        public string languageCode = "";             // 语言代码 ("zh-Hans", "en" 等)，空=系统默认
     }
     
     /// <summary>
@@ -184,7 +186,8 @@ namespace PomodoroTimer.Data
         {
             int hours = (int)(totalFocusTimeSeconds / 3600);
             int minutes = (int)((totalFocusTimeSeconds % 3600) / 60);
-            return $"{hours}小时{minutes}分钟";
+            return GetSmart("UI_General", "time_hours_minutes",
+                ("hours", hours), ("minutes", minutes));
         }
     }
 }

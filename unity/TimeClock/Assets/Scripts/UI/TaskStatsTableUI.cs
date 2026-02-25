@@ -7,6 +7,7 @@ using TMPro;
 using PomodoroTimer.Core;
 using PomodoroTimer.Data;
 using PomodoroTimer.Utils;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.UI
 {
@@ -44,11 +45,13 @@ namespace PomodoroTimer.UI
         {
             int hours = (int)(totalSeconds / 3600);
             int minutes = (int)((totalSeconds % 3600) / 60);
-            
+
             if (hours > 0)
-                return $"{hours}小时{minutes}分钟";
+                return GetSmart("UI_General", "time_hours_minutes",
+                    ("hours", hours), ("minutes", minutes));
             else
-                return $"{minutes}分钟";
+                return GetSmart("UI_General", "time_minutes",
+                    ("minutes", minutes));
         }
     }
     
@@ -298,7 +301,9 @@ namespace PomodoroTimer.UI
             var nameText = rowObj.transform.Find("TaskNameText")?.GetComponent<TextMeshProUGUI>();
             if (nameText != null)
             {
-                nameText.text = item.isDeleted ? $"{item.taskName} (已删除)" : item.taskName;
+                nameText.text = item.isDeleted
+                    ? $"{item.taskName} {Get("UI_Statistics", "task_deleted_suffix")}"
+                    : item.taskName;
                 nameText.color = item.isDeleted ? ColorPalette.Theme.TextSecondary : ColorPalette.Theme.TextPrimary;
             }
             
@@ -349,16 +354,18 @@ namespace PomodoroTimer.UI
             
             if (countHeaderText != null)
             {
-                countHeaderText.text = currentSortType == TaskSortType.ByCount 
-                    ? $"完成数{arrow}" 
-                    : "完成数";
+                string countLabel = Get("UI_Statistics", "table_header_count");
+                countHeaderText.text = currentSortType == TaskSortType.ByCount
+                    ? $"{countLabel}{arrow}"
+                    : countLabel;
             }
-            
+
             if (timeHeaderText != null)
             {
-                timeHeaderText.text = currentSortType == TaskSortType.ByTime 
-                    ? $"总时间{arrow}" 
-                    : "总时间";
+                string timeLabel = Get("UI_Statistics", "table_header_time");
+                timeHeaderText.text = currentSortType == TaskSortType.ByTime
+                    ? $"{timeLabel}{arrow}"
+                    : timeLabel;
             }
         }
         

@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using PomodoroTimer.Utils;
 using PomodoroTimer.Core;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.UI
 {
@@ -531,11 +532,13 @@ namespace PomodoroTimer.UI
             {
                 int hours = (int)(minutes / 60);
                 int mins = (int)(minutes % 60);
-                timeText = mins > 0 ? $"{hours}小时{mins}分钟" : $"{hours}小时";
+                timeText = mins > 0
+                    ? GetSmart("UI_General", "time_hours_minutes", ("hours", hours), ("minutes", mins))
+                    : GetSmart("UI_General", "time_hours", ("hours", hours));
             }
             else
             {
-                timeText = $"{minutes:F0}分钟";
+                timeText = GetSmart("UI_General", "time_minutes", ("minutes", $"{minutes:F0}"));
             }
             
             tooltipTextInstance.text = $"{taskName}\n{timeText}";

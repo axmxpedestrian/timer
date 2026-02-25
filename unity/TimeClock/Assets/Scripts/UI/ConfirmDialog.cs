@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using PomodoroTimer.Utils;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.UI
 {
@@ -99,18 +100,21 @@ namespace PomodoroTimer.UI
             string message,
             Action onConfirmCallback,
             Action onCancelCallback = null,
-            string confirmText = "确认",
-            string cancelText = "取消",
+            string confirmText = null,
+            string cancelText = null,
             bool isDanger = false)
         {
             Debug.Log($"[ConfirmDialog] 显示弹窗: {title}");
-            
+
             // 【修复】标记有待显示的请求，防止 Awake 中的 Hide 覆盖
             showPending = true;
-            
+
+            confirmText = confirmText ?? Get("UI_General", "btn_confirm");
+            cancelText = cancelText ?? Get("UI_General", "btn_cancel");
+
             onConfirm = onConfirmCallback;
             onCancel = onCancelCallback;
-            
+
             if (titleText != null) titleText.text = title;
             if (messageText != null) messageText.text = message;
             if (confirmButtonText != null) confirmButtonText.text = confirmText;
@@ -147,15 +151,15 @@ namespace PomodoroTimer.UI
         /// </summary>
         public void ShowConfirm(string message, Action onConfirmCallback, bool isDanger = true)
         {
-            Show("确认操作", message, onConfirmCallback, null, "确认", "取消", isDanger);
+            Show(Get("UI_General", "dialog_confirm_action"), message, onConfirmCallback, null, null, null, isDanger);
         }
         
         /// <summary>
         /// 显示提示弹窗（只有一个按钮）
         /// </summary>
-        public void ShowAlert(string title, string message, string buttonText = "知道了")
+        public void ShowAlert(string title, string message, string buttonText = null)
         {
-            Show(title, message, null, null, buttonText, "", false);
+            Show(title, message, null, null, buttonText ?? Get("UI_General", "btn_ok"), "", false);
         }
         
         /// <summary>
@@ -164,12 +168,12 @@ namespace PomodoroTimer.UI
         public void ShowDelete(string itemName, Action onConfirmCallback)
         {
             Show(
-                "确认删除",
-                $"确定要删除「{itemName}」吗？\n此操作无法撤销。",
+                Get("UI_General", "dialog_confirm_delete"),
+                GetSmart("UI_General", "dialog_delete_message", ("itemName", itemName)),
                 onConfirmCallback,
                 null,
-                "删除",
-                "取消",
+                Get("UI_General", "btn_delete"),
+                null,
                 true
             );
         }

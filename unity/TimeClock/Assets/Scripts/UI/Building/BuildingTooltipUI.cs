@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using PomodoroTimer.Map.Data;
 using PomodoroTimer.Resource;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.UI.Building
 {
@@ -44,25 +45,25 @@ namespace PomodoroTimer.UI.Building
         private bool isShowing;
         private bool isWaitingToShow;
 
-        // BuildingCategory 中文映射
-        private static readonly Dictionary<BuildingCategory, string> CategoryNames =
+        // BuildingCategory -> String Table key 映射
+        private static readonly Dictionary<BuildingCategory, string> CategoryKeys =
             new Dictionary<BuildingCategory, string>
         {
-            { BuildingCategory.All, "全部" },
-            { BuildingCategory.Residential, "住宅" },
-            { BuildingCategory.Road, "道路" },
-            { BuildingCategory.Nature, "自然" },
-            { BuildingCategory.Facility, "设施" },
-            { BuildingCategory.Structure, "结构" },
-            { BuildingCategory.Decoration, "装饰" },
-            { BuildingCategory.Commercial, "商业" },
-            { BuildingCategory.Industrial, "工业" },
-            { BuildingCategory.Infrastructure, "基础设施" },
-            { BuildingCategory.Special, "特殊建筑" },
+            { BuildingCategory.All, "category_all" },
+            { BuildingCategory.Residential, "category_residential" },
+            { BuildingCategory.Road, "category_road" },
+            { BuildingCategory.Nature, "category_nature" },
+            { BuildingCategory.Facility, "category_facility" },
+            { BuildingCategory.Structure, "category_structure" },
+            { BuildingCategory.Decoration, "category_decoration" },
+            { BuildingCategory.Commercial, "category_commercial" },
+            { BuildingCategory.Industrial, "category_industrial" },
+            { BuildingCategory.Infrastructure, "category_infrastructure" },
+            { BuildingCategory.Special, "category_special" },
         };
 
-        // 标签分类中文名
-        private static readonly string[] TagCategoryLabels = { "类型", "风格", "消耗", "产出" };
+        // 标签分类 key
+        private static readonly string[] TagCategoryKeys = { "tag_type", "tag_style", "tag_cost", "tag_output" };
 
         private void Awake()
         {
@@ -230,9 +231,11 @@ namespace PomodoroTimer.UI.Building
             if (categoryText != null)
             {
                 string catName;
-                if (!CategoryNames.TryGetValue(bp.category, out catName))
+                if (CategoryKeys.TryGetValue(bp.category, out string catKey))
+                    catName = Get("UI_Building", catKey);
+                else
                     catName = bp.category.ToString();
-                categoryText.text = $"类别: {catName}";
+                categoryText.text = GetSmart("UI_Building", "tooltip_category", ("name", catName));
             }
 
             // 标签
@@ -255,7 +258,7 @@ namespace PomodoroTimer.UI.Building
             if (costs == null || costs.Length == 0) return "";
 
             var sb = new StringBuilder();
-            sb.Append("消耗: ");
+            sb.Append(Get("UI_Building", "tooltip_cost") + " ");
             for (int i = 0; i < costs.Length; i++)
             {
                 if (i > 0) sb.Append("  ");
@@ -290,7 +293,7 @@ namespace PomodoroTimer.UI.Building
                 if (tags == null || tags.Count == 0) continue;
 
                 if (sb.Length > 0) sb.Append("  ");
-                sb.Append($"{TagCategoryLabels[i]}: ");
+                sb.Append($"{Get("UI_Building", TagCategoryKeys[i])}: ");
                 for (int j = 0; j < tags.Count; j++)
                 {
                     if (j > 0) sb.Append(", ");

@@ -7,6 +7,7 @@ using TMPro;
 using PomodoroTimer.Core;
 using PomodoroTimer.Data;
 using PomodoroTimer.Utils;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.UI
 {
@@ -225,13 +226,14 @@ namespace PomodoroTimer.UI
                 string displayName = info.taskName;
                 if (info.isDeleted)
                 {
-                    displayName += " <color=#888888>(已删除)</color>";
+                    displayName += $" <color=#888888>{Get("UI_Tasks", "history_deleted_marker")}</color>";
                 }
                 texts[0].text = displayName;
                 
                 // 统计信息
                 string timeStr = StatisticsManager.FormatTime(info.totalSeconds);
-                texts[1].text = $"🍅 {info.recordCount} 个番茄钟 · {timeStr}";
+                texts[1].text = "🍅 " + GetSmart("UI_Tasks", "history_stats",
+                    ("count", info.recordCount), ("time", timeStr));
             }
             
             // 设置Toggle
@@ -261,11 +263,12 @@ namespace PomodoroTimer.UI
             {
                 if (selectedCount == 0)
                 {
-                    selectedCountText.text = "未选择任何任务";
+                    selectedCountText.text = Get("UI_Tasks", "history_none_selected");
                 }
                 else
                 {
-                    selectedCountText.text = $"已选择 {selectedCount} 个任务，共 {totalRecords} 条记录";
+                    selectedCountText.text = GetSmart("UI_Tasks", "history_selected",
+                        ("count", selectedCount), ("total", totalRecords));
                 }
             }
             
@@ -317,17 +320,18 @@ namespace PomodoroTimer.UI
             string taskNames = string.Join("、", selectedTasks.Take(3).Select(t => t.taskName));
             if (selectedTasks.Count > 3)
             {
-                taskNames += $" 等{selectedTasks.Count}个任务";
+                taskNames += " " + GetSmart("UI_Tasks", "history_etc_tasks",
+                    ("count", selectedTasks.Count));
             }
-            
-            // 显示确认弹窗
+
             ConfirmDialog.Instance?.Show(
-                "确认删除记录",
-                $"确定要删除以下任务的历史记录吗？\n\n{taskNames}\n\n共 {totalRecords} 条记录将被永久删除。",
+                Get("UI_Tasks", "history_delete_title"),
+                GetSmart("UI_Tasks", "history_delete_message",
+                    ("tasks", taskNames), ("total", totalRecords)),
                 () => ExecuteDelete(selectedTasks),
                 null,
-                "删除",
-                "取消",
+                Get("UI_General", "btn_delete"),
+                Get("UI_General", "btn_cancel"),
                 true
             );
         }

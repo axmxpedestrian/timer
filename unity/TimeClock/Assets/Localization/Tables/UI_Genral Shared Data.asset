@@ -1,0 +1,100 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI_Genral Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: UI_Genral
+  m_TableCollectionNameGuidString: 967124bdb6ca0e841bb90f1c0df7b253
+  m_Entries:
+  - m_Id: 45798922219520
+    m_Key: btn_confirm
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45856312881152
+    m_Key: btn_cancel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 45920150188032
+    m_Key: btn_delete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46051905859584
+    m_Key: btn_ok
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46084856311808
+    m_Key: btn_save
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46127646601216
+    m_Key: btn_reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46171330277376
+    m_Key: btn_close
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46216767172608
+    m_Key: dialog_confirm_action
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46303526350848
+    m_Key: dialog_confirm_delete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46445897805824
+    m_Key: dialog_delete_message
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46541020426240
+    m_Key: version_text
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46626164797440
+    m_Key: time_hours_minutes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46681592524800
+    m_Key: time_hours
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46715625107456
+    m_Key: time_minutes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46807178375168
+    m_Key: unit_minutes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87777823518720
+    m_Key: header_titletext
+    m_Metadata:
+      m_Items: []
+  - m_Id: 87984816615424
+    m_Key: header_statistic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 88158045564928
+    m_Key: header_setting
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1243047919691235353
+  references:
+    version: 2
+    RefIds:
+    - rid: 1243047919691235353
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1771903025065

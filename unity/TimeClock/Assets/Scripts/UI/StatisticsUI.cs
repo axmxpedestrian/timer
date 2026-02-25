@@ -5,6 +5,7 @@ using TMPro;
 using PomodoroTimer.Core;
 using PomodoroTimer.Data;
 using PomodoroTimer.Utils;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.UI
 {
@@ -143,7 +144,7 @@ namespace PomodoroTimer.UI
             
             var options = new List<TMP_Dropdown.OptionData>
             {
-                new TMP_Dropdown.OptionData("全部任务")
+                new TMP_Dropdown.OptionData(Get("UI_Statistics", "filter_all_tasks"))
             };
             
             var allTaskIds = new HashSet<string>();
@@ -170,7 +171,7 @@ namespace PomodoroTimer.UI
                     if (!string.IsNullOrEmpty(record.taskId) && !allTaskIds.Contains(record.taskId))
                     {
                         allTaskIds.Add(record.taskId);
-                        taskNames[record.taskId] = record.taskName + " (已删除)";
+                        taskNames[record.taskId] = record.taskName + " " + Get("UI_Statistics", "task_deleted_suffix");
                     }
                 }
             }
@@ -262,16 +263,16 @@ namespace PomodoroTimer.UI
                 switch (currentViewType)
                 {
                     case StatisticsViewType.Daily:
-                        chartTitleText.text = "每日专注时间（近7天）";
+                        chartTitleText.text = Get("UI_Statistics", "chart_title_daily");
                         break;
                     case StatisticsViewType.Weekly:
-                        chartTitleText.text = "每周专注时间（近8周）";
+                        chartTitleText.text = Get("UI_Statistics", "chart_title_weekly");
                         break;
                     case StatisticsViewType.Monthly:
-                        chartTitleText.text = "每月专注时间（近12个月）";
+                        chartTitleText.text = Get("UI_Statistics", "chart_title_monthly");
                         break;
                     case StatisticsViewType.Yearly:
-                        chartTitleText.text = "每年专注时间（近8年）";
+                        chartTitleText.text = Get("UI_Statistics", "chart_title_yearly");
                         break;
                 }
             }
@@ -351,7 +352,7 @@ namespace PomodoroTimer.UI
                     stackedData.Add(stat.taskBreakdown ?? new List<TaskBreakdownItem>());
                 }
                 
-                barChart.SetStackedData(labels, stackedData, "分钟");
+                barChart.SetStackedData(labels, stackedData, Get("UI_General", "unit_minutes"));
             }
             else
             {
@@ -366,7 +367,7 @@ namespace PomodoroTimer.UI
                     values.Add(stat.totalFocusSeconds / 60f);
                 }
                 
-                barChart.SetData(labels, values, "分钟");
+                barChart.SetData(labels, values, Get("UI_General", "unit_minutes"));
             }
         }
         
@@ -387,7 +388,7 @@ namespace PomodoroTimer.UI
                     stackedData.Add(stat.taskBreakdown ?? new List<TaskBreakdownItem>());
                 }
                 
-                barChart.SetStackedData(labels, stackedData, "分钟");
+                barChart.SetStackedData(labels, stackedData, Get("UI_General", "unit_minutes"));
             }
             else
             {
@@ -402,7 +403,7 @@ namespace PomodoroTimer.UI
                     values.Add(stat.totalFocusSeconds / 60f);
                 }
                 
-                barChart.SetData(labels, values, "分钟");
+                barChart.SetData(labels, values, Get("UI_General", "unit_minutes"));
             }
         }
         
@@ -423,7 +424,7 @@ namespace PomodoroTimer.UI
                     stackedData.Add(stat.taskBreakdown ?? new List<TaskBreakdownItem>());
                 }
                 
-                barChart.SetStackedData(labels, stackedData, "分钟");
+                barChart.SetStackedData(labels, stackedData, Get("UI_General", "unit_minutes"));
             }
             else
             {
@@ -438,7 +439,7 @@ namespace PomodoroTimer.UI
                     values.Add(stat.totalFocusSeconds / 60f);
                 }
                 
-                barChart.SetData(labels, values, "分钟");
+                barChart.SetData(labels, values, Get("UI_General", "unit_minutes"));
             }
         }
         
@@ -459,7 +460,7 @@ namespace PomodoroTimer.UI
                     stackedData.Add(stat.taskBreakdown ?? new List<TaskBreakdownItem>());
                 }
 
-                barChart.SetStackedData(labels, stackedData, "分钟");
+                barChart.SetStackedData(labels, stackedData, Get("UI_General", "unit_minutes"));
             }
             else
             {
@@ -474,7 +475,7 @@ namespace PomodoroTimer.UI
                     values.Add(stat.totalFocusSeconds / 60f);
                 }
 
-                barChart.SetData(labels, values, "分钟");
+                barChart.SetData(labels, values, Get("UI_General", "unit_minutes"));
             }
         }
 
@@ -488,7 +489,7 @@ namespace PomodoroTimer.UI
             // 更新标题
             if (chartTitleText != null)
             {
-                chartTitleText.text = "每日时间段平均专注分布";
+                chartTitleText.text = Get("UI_Statistics", "chart_title_habit");
             }
 
             var distribution = StatisticsManager.Instance.GetHourlyDistribution();
@@ -497,7 +498,7 @@ namespace PomodoroTimer.UI
             var labels = new List<string>(slotLabels);
             var values = new List<float>(distribution);
 
-            barChart.SetData(labels, values, "分钟");
+            barChart.SetData(labels, values, Get("UI_General", "unit_minutes"));
         }
         
         private void RefreshSummary()
@@ -518,7 +519,8 @@ namespace PomodoroTimer.UI
             
             if (streakText != null)
             {
-                streakText.text = $"🔥 连续 {overallStats.currentStreak} 天";
+                streakText.text = "🔥 " + GetSmart("UI_Statistics", "streak_days",
+                    ("days", overallStats.currentStreak));
             }
             
             if (totalCoinsText != null)
@@ -542,7 +544,8 @@ namespace PomodoroTimer.UI
                 }
                 
                 float average = activeDays > 0 ? totalMinutes / activeDays : 0;
-                averageText.text = $"日均 {average:F0} 分钟";
+                averageText.text = GetSmart("UI_Statistics", "daily_average",
+                    ("minutes", $"{average:F0}"));
             }
         }
         

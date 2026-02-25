@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using PomodoroTimer.Data;
 using PomodoroTimer.Utils;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.Core
 {
@@ -547,19 +548,21 @@ namespace PomodoroTimer.Core
             switch (currentType)
             {
                 case PomodoroType.Focus:
-                    return "专注中";
+                    return Get("UI_Timer", "timer_state_focus");
                 case PomodoroType.ShortBreak:
-                    return "短休息";
+                    return Get("UI_Timer", "timer_state_short_break");
                 case PomodoroType.LongBreak:
-                    return "长休息";
+                    return Get("UI_Timer", "timer_state_long_break");
                 default:
                     return "";
             }
         }
-        
+
         public string GetModeText()
         {
-            return currentMode == TimerMode.Countdown ? "倒计时" : "正计时";
+            return currentMode == TimerMode.Countdown
+                ? Get("UI_Timer", "timer_mode_countdown")
+                : Get("UI_Timer", "timer_mode_countup");
         }
         
         public void Reset()

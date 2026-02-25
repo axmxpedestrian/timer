@@ -1,0 +1,128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI_Setting Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: UI_Setting
+  m_TableCollectionNameGuidString: bf3987f4b291ee146aabc9123706a4ed
+  m_Entries:
+  - m_Id: 47212843069440
+    m_Key: tab_game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47258632286208
+    m_Key: tab_pomodoro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47301422575616
+    m_Key: tab_display
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47344284168192
+    m_Key: tab_sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47399288270848
+    m_Key: tab_keys
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47448634257408
+    m_Key: label_focus_duration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47494641577984
+    m_Key: label_short_break
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47555400265728
+    m_Key: label_long_break
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47597171339264
+    m_Key: label_rounds
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47650661298176
+    m_Key: label_countup_min
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48588499283968
+    m_Key: label_countup_max
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48665582202880
+    m_Key: label_auto_start_break
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48707076452352
+    m_Key: label_auto_start_focus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48772998328320
+    m_Key: label_sound_enabled
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48812806467584
+    m_Key: label_volume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50324672704512
+    m_Key: label_preview_sound
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50894997385216
+    m_Key: label_fullscreen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50968448036864
+    m_Key: label_topmost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51004548411392
+    m_Key: label_map_zoom_speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51045581287424
+    m_Key: label_language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51123385626624
+    m_Key: label_clear_history
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51316755623936
+    m_Key: hint_time_settings_pending
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51355263528960
+    m_Key: feature_not_ready
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51404303331328
+    m_Key: feature_not_ready_msg
+    m_Metadata:
+      m_Items: []
+  - m_Id: 61575788326912
+    m_Key: tab_setting
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1243047919691235355
+  references:
+    version: 2
+    RefIds:
+    - rid: 1243047919691235355
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1771903068795

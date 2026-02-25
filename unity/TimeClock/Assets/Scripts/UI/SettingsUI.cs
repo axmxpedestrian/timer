@@ -5,6 +5,7 @@ using System.Collections;
 using PomodoroTimer.Core;
 using PomodoroTimer.Data;
 using PomodoroTimer.Utils;
+using static PomodoroTimer.Utils.LocalizedText;
 
 // 解决命名空间冲突：为计时器类创建别名
 using PomodoroTimerCore = PomodoroTimer.Core.PomodoroTimer;
@@ -66,6 +67,12 @@ namespace PomodoroTimer.UI
         [SerializeField] private Slider mapZoomSpeedSlider;
         [SerializeField] private TextMeshProUGUI mapZoomSpeedValueText;
 
+        [Header("语言设置")]
+        [SerializeField] private Button languageChineseButton;
+        [SerializeField] private Button languageEnglishButton;
+        [SerializeField] private Image languageChineseHighlight;
+        [SerializeField] private Image languageEnglishHighlight;
+
         [Header("通用按钮")]
         [SerializeField] private Button closeButton;
 
@@ -77,8 +84,11 @@ namespace PomodoroTimer.UI
         private static SettingsData pendingTimeSettings; // 静态，确保面板关闭后仍然保留
         private static bool hasUnsavedTimeChanges = false;
 
+        // 语言设置（点击保存后才生效）
+        private string pendingLanguageCode = null;
+
         // 当前选中的分页索引
-        private int currentTabIndex = 1; // 默认番茄钟分页
+        private int currentTabIndex = 0; // 默认游戏分页
         private Button[] tabButtons;
         private GameObject[] tabContents;
 
@@ -99,10 +109,13 @@ namespace PomodoroTimer.UI
         private void OnEnable()
         {
             LoadCurrentSettings();
-            // 默认显示番茄钟分页
-            SwitchToTab(1);
+            // 默认显示游戏分页
+            SwitchToTab(0);
             // 确保清除历史按钮状态正确
             UpdateClearHistoryButtonVisibility();
+            // 重置待选语言，并更新高亮
+            pendingLanguageCode = null;
+            UpdateLanguageHighlights();
         }
 
         private void Start()
@@ -113,7 +126,8 @@ namespace PomodoroTimer.UI
             // 显示版本信息
             if (versionText != null)
             {
-                versionText.text = $"版本 {Application.version}";
+                versionText.text = GetSmart("UI_General", "version_text",
+                    ("version", Application.version));
             }
         }
 
@@ -215,6 +229,10 @@ namespace PomodoroTimer.UI
             resetDefaultButton?.onClick.AddListener(OnResetDefaultClicked);
             clearHistoryButton?.onClick.AddListener(OnClearHistoryClicked);
             previewSoundButton?.onClick.AddListener(OnPreviewSoundClicked);
+
+            // 语言切换按钮
+            languageChineseButton?.onClick.AddListener(() => OnLanguageSelected("zh-Hans"));
+            languageEnglishButton?.onClick.AddListener(() => OnLanguageSelected("en"));
 
             // 实时更新音量
             volumeSlider?.onValueChanged.AddListener(OnVolumeChanged);
@@ -413,6 +431,35 @@ namespace PomodoroTimer.UI
         }
 #endif
 
+        /// <summary>
+        /// 语言选择回调 - 仅记录选择，点保存后生效
+        /// </summary>
+        private void OnLanguageSelected(string localeCode)
+        {
+            AudioManager.Instance?.PlayClick();
+            pendingLanguageCode = localeCode;
+            UpdateLanguageHighlights();
+        }
+
+        /// <summary>
+        /// 根据当前/待选语言更新按钮高亮状态
+        /// </summary>
+        private void UpdateLanguageHighlights()
+        {
+            // 优先使用待选语言，否则使用当前生效的语言
+            string displayCode = pendingLanguageCode
+                ?? LocalizationManager.Instance?.GetCurrentLocaleCode()
+                ?? "";
+
+            bool isChinese = displayCode.StartsWith("zh");
+            bool isEnglish = displayCode == "en";
+
+            if (languageChineseHighlight != null)
+                languageChineseHighlight.color = isChinese ? activeTabColor : inactiveTabColor;
+            if (languageEnglishHighlight != null)
+                languageEnglishHighlight.color = isEnglish ? activeTabColor : inactiveTabColor;
+        }
+
         #region 按钮事件
 
         private void OnCloseClicked()
@@ -470,7 +517,7 @@ namespace PomodoroTimer.UI
                 };
                 hasUnsavedTimeChanges = true;
 
-                ShowHint("时间设置将在计时停止后生效");
+                ShowHint(Get("UI_Settings", "hint_time_settings_pending"));
             }
             else if (timeSettingsChanged)
             {
@@ -508,6 +555,13 @@ namespace PomodoroTimer.UI
             // 游戏设置 - 地图缩放速度
             float newMapZoomSpeed = mapZoomSpeedSlider?.value ?? 2f;
             currentSettings.mapZoomSpeed = newMapZoomSpeed;
+
+            // 语言设置 - 点保存时才切换
+            if (!string.IsNullOrEmpty(pendingLanguageCode))
+            {
+                LocalizationManager.Instance?.ChangeLocale(pendingLanguageCode);
+                pendingLanguageCode = null;
+            }
 
             // 保存设置
             DataManager.Instance.Save();
@@ -572,8 +626,8 @@ namespace PomodoroTimer.UI
 
                 // 显示提示
                 ConfirmDialog.Instance?.ShowAlert(
-                    "功能未就绪",
-                    "历史记录管理界面尚未创建，请先在场景中添加 HistoryManageUI 组件。"
+                    Get("UI_Settings", "feature_not_ready"),
+                    Get("UI_Settings", "feature_not_ready_msg")
                 );
                 return;
             }

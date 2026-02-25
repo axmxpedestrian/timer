@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.UI.Building
 {
@@ -61,10 +62,10 @@ namespace PomodoroTimer.UI.Building
 
             tagCategoryDropdown.ClearOptions();
 
-            var options = new List<string> { "标签筛选..." };
+            var options = new List<string> { Get("UI_Building", "tag_filter_placeholder") };
             for (int i = 0; i < BuildingTagFilter.CategoryCount; i++)
                 options.Add(BuildingTagFilter.TagCategoryNames[i]);
-            options.Add("清除所有筛选");
+            options.Add(Get("UI_General", "btn_reset"));
 
             tagCategoryDropdown.AddOptions(options);
             tagCategoryDropdown.value = 0;

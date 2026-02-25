@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Localization-Assets-Shared
+  m_EditorClassIdentifier: 
+  m_GroupName: Localization-Assets-Shared
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 801c0cf431a9ee442990c33a84e799ae
+  m_SerializeEntries:
+  - m_GUID: 2b8370686fa628042b1358df35475cfc
+    m_Address: Assets/Localization/Tables/UI_Building Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6217b39b8757f1949a5949ea8d7b0ebe
+    m_Address: Assets/Localization/Tables/UI_Tasks Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 665f53a9b8241f9459e313d1e7bf2f77
+    m_Address: Assets/Localization/Tables/UI_Timer Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 967124bdb6ca0e841bb90f1c0df7b253
+    m_Address: Assets/Localization/Tables/UI_Genral Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bf3987f4b291ee146aabc9123706a4ed
+    m_Address: Assets/Localization/Tables/UI_Setting Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d536f3fbf84a3034ab93a901c6be3f44
+    m_Address: Assets/Localization/Tables/UI_Statistics Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 1
+  m_Settings: {fileID: 11400000, guid: 6316172df9e6d1e4bb828c62b6ba18bb, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: aca22b220d809f54c8ec4ce1e140266a, type: 2}
+    - {fileID: 11400000, guid: 990c83f966b7d614f8e91776a8ad6748, type: 2}

@@ -1,0 +1,156 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI_Building Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: UI_Building
+  m_TableCollectionNameGuidString: 2b8370686fa628042b1358df35475cfc
+  m_Entries:
+  - m_Id: 52418720919552
+    m_Key: category_all
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52454766768128
+    m_Key: category_residential
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52512815935488
+    m_Key: category_road
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52544118026240
+    m_Key: category_nature
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52599847743488
+    m_Key: category_facility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52647566340096
+    m_Key: category_structure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52704365604864
+    m_Key: category_decoration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52737483829248
+    m_Key: category_commercial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52881512034304
+    m_Key: category_industrial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52919906693120
+    m_Key: category_infrastructure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52990123536384
+    m_Key: category_special
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53029721960448
+    m_Key: panel_category_building
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53096159735808
+    m_Key: hint_click_to_place
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53138950025216
+    m_Key: hint_placing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53219866537984
+    m_Key: hint_insufficient_resources
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53272232423424
+    m_Key: hint_placement_continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53412817104896
+    m_Key: hint_placement_end_resources
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54150200913920
+    m_Key: tag_filter_placeholder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54220447117312
+    m_Key: tag-type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54266928394240
+    m_Key: tag_style
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54309018234880
+    m_Key: tag_cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54335761117184
+    m_Key: tag_output
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54387795652608
+    m_Key: tooltip_category
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54476786200576
+    m_Key: tooltip_cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54537385504768
+    m_Key: demolish_confirm_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54582126145536
+    m_Key: demolish_confirm_btn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54754679812096
+    m_Key: demolish_hint_select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54853292093440
+    m_Key: demolish_selected_hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54920782639104
+    m_Key: demolish_success
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54987144916992
+    m_Key: demolish_refund
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55053771436032
+    m_Key: demolish_message
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55111254372352
+    m_Key: demolish_etc
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1243047919691235357
+  references:
+    version: 2
+    RefIds:
+    - rid: 1243047919691235357
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1771903135221

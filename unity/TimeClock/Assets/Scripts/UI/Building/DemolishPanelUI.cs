@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using PomodoroTimer.Resource;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.UI.Building
 {
@@ -138,12 +139,12 @@ namespace PomodoroTimer.UI.Building
             if (dialog != null)
             {
                 dialog.Show(
-                    "确认销毁",
+                    Get("UI_Building", "demolish_confirm_title"),
                     message,
                     OnDemolishConfirmed,
                     null,
-                    "确认销毁",
-                    "取消",
+                    Get("UI_Building", "demolish_confirm_title"),
+                    null,
                     true
                 );
             }
@@ -163,7 +164,7 @@ namespace PomodoroTimer.UI.Building
             if (controller == null) return;
 
             controller.ConfirmDemolish();
-            UpdateHintText("建筑已销毁，资源已返还");
+            UpdateHintText(Get("UI_Building", "demolish_success"));
         }
 
         #endregion
@@ -195,7 +196,7 @@ namespace PomodoroTimer.UI.Building
             // 提示文本
             if (active)
             {
-                UpdateHintText("点击或框选建筑进行选中，右键取消选中，ESC退出");
+                UpdateHintText(Get("UI_Building", "demolish_hint_select"));
             }
             else
             {
@@ -215,19 +216,20 @@ namespace PomodoroTimer.UI.Building
 
             if (confirmButtonText != null)
             {
-                confirmButtonText.text = count > 0 ? $"确认销毁 ({count})" : "确认销毁";
+                confirmButtonText.text = count > 0
+                    ? GetSmart("UI_Building", "demolish_confirm_btn", ("count", count))
+                    : Get("UI_Building", "demolish_confirm_title");
             }
 
-            // 更新提示
             if (isDemolishActive)
             {
                 if (count > 0)
                 {
-                    UpdateHintText($"已选中 {count} 个建筑，点击右下角确认销毁");
+                    UpdateHintText(GetSmart("UI_Building", "demolish_selected_hint", ("count", count)));
                 }
                 else
                 {
-                    UpdateHintText("点击或框选建筑进行选中，右键取消选中，ESC退出");
+                    UpdateHintText(Get("UI_Building", "demolish_hint_select"));
                 }
             }
         }
@@ -290,7 +292,6 @@ namespace PomodoroTimer.UI.Building
             var refunds = controller.GetRefundSummary();
             float ratio = controller.RefundRatio;
 
-            // 建筑名称
             string buildingList;
             if (names.Count <= 3)
             {
@@ -298,10 +299,10 @@ namespace PomodoroTimer.UI.Building
             }
             else
             {
-                buildingList = $"{names[0]}、{names[1]}...等 {names.Count} 个建筑";
+                buildingList = $"{names[0]}、{names[1]}" +
+                    GetSmart("UI_Building", "demolish_etc", ("count", names.Count));
             }
 
-            // 返还资源
             string refundText = "";
             if (refunds.Count > 0)
             {
@@ -312,10 +313,12 @@ namespace PomodoroTimer.UI.Building
                     string resName = definition != null ? definition.resourceName : kvp.Key.ToString();
                     parts.Add($"{resName} x{ResourceDefinition.FormatAmount(kvp.Value)}");
                 }
-                refundText = $"\n\n返还资源（{(int)(ratio * 100)}%）：\n{string.Join("\n", parts)}";
+                refundText = "\n\n" + GetSmart("UI_Building", "demolish_refund",
+                    ("percent", (int)(ratio * 100))) + "\n" + string.Join("\n", parts);
             }
 
-            return $"确定要销毁 {buildingList} 吗？\n此操作无法撤销。{refundText}";
+            return GetSmart("UI_Building", "demolish_message",
+                ("list", buildingList), ("refund", refundText));
         }
 
         /// <summary>

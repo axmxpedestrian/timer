@@ -1,0 +1,173 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_Building_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 2b8370686fa628042b1358df35475cfc, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 1243047919691235366
+  m_TableData:
+  - m_Id: 52418720919552
+    m_Localized: AlL
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52454766768128
+    m_Localized: Residential
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52512815935488
+    m_Localized: Road
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52544118026240
+    m_Localized: Nature
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52599847743488
+    m_Localized: Facility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52647566340096
+    m_Localized: Structure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52704365604864
+    m_Localized: Decoration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52737483829248
+    m_Localized: Commercial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52881512034304
+    m_Localized: Industrial
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52919906693120
+    m_Localized: Infrastructure
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52990123536384
+    m_Localized: Special
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53029721960448
+    m_Localized: Building
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53096159735808
+    m_Localized: Click a building to start placement
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53138950025216
+    m_Localized: 'Placing {name} - Q/E rotate, Click place, ESC cancel '
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235366
+  - m_Id: 53219866537984
+    m_Localized: Insufficient resources
+    m_Metadata:
+      m_Items: []
+  - m_Id: 53272232423424
+    m_Localized: Continue placing {name}
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235366
+  - m_Id: 53412817104896
+    m_Localized: Insufficient resources; placement ended
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54150200913920
+    m_Localized: Filter tags...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54220447117312
+    m_Localized: Type
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54266928394240
+    m_Localized: Style
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54309018234880
+    m_Localized: Cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54335761117184
+    m_Localized: Output
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54387795652608
+    m_Localized: 'Category: {name}'
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235366
+  - m_Id: 54476786200576
+    m_Localized: 'Cost:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54537385504768
+    m_Localized: Confirm Demolish
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54582126145536
+    m_Localized: Confirm Demolish ({count})
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235366
+  - m_Id: 54754679812096
+    m_Localized: Click/drag to select, right-click to deselect, EsC to exit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54853292093440
+    m_Localized: '{count} building(s) selected, click to confirm'
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235366
+  - m_Id: 54920782639104
+    m_Localized: Building demolished, resources refunded
+    m_Metadata:
+      m_Items: []
+  - m_Id: 54987144916992
+    m_Localized: 'Refund ({percent}%):'
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235366
+  - m_Id: 55053771436032
+    m_Localized: Demolish {list}? This cannot be undone. {refund}
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235366
+  - m_Id: 55111254372352
+    m_Localized: ...and {count} more
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235366
+  references:
+    version: 2
+    RefIds:
+    - rid: 1243047919691235366
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 53138950025216
+        - id: 53272232423424
+        - id: 54387795652608
+        - id: 54582126145536
+        - id: 54853292093440
+        - id: 54987144916992
+        - id: 55053771436032
+        - id: 55111254372352

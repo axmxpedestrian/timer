@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using PomodoroTimer.Map.Data;
 using PomodoroTimer.Map.Sprite2D;
 using PomodoroTimer.Resource;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.UI.Building
 {
@@ -197,7 +198,7 @@ namespace PomodoroTimer.UI.Building
                 rotationHint.SetActive(false);
             }
 
-            UpdateHintText("点击建造物开始放置");
+            UpdateHintText(Get("UI_Building", "hint_click_to_place"));
         }
 
         /// <summary>
@@ -258,7 +259,12 @@ namespace PomodoroTimer.UI.Building
 
             string[] categoryNames = new string[]
             {
-                "全部", "建筑", "道路", "自然", "设施", "结构"
+                Get("UI_Building", "category_all"),
+                Get("UI_Building", "panel_category_building"),
+                Get("UI_Building", "category_road"),
+                Get("UI_Building", "category_nature"),
+                Get("UI_Building", "category_facility"),
+                Get("UI_Building", "category_structure")
             };
 
             for (int i = 0; i < categories.Length; i++)
@@ -581,7 +587,7 @@ namespace PomodoroTimer.UI.Building
             // 检查资源是否足够
             if (!data.isAffordable)
             {
-                UpdateHintText("资源不足，无法建造");
+                UpdateHintText(Get("UI_Building", "hint_insufficient_resources"));
                 return;
             }
 
@@ -602,7 +608,7 @@ namespace PomodoroTimer.UI.Building
                 rotationHint.SetActive(true);
             }
 
-            UpdateHintText($"放置 {data.buildingName} - Q/E旋转, 点击放置, ESC取消");
+            UpdateHintText(GetSmart("UI_Building", "hint_placing", ("name", data.buildingName)));
 
             OnBuildingSelected?.Invoke(data.blueprint);
         }
@@ -662,18 +668,18 @@ namespace PomodoroTimer.UI.Building
                     {
                         placementController.StartPlacement(selectedBuilding.blueprint);
                     }
-                    UpdateHintText($"继续放置 {selectedBuilding.buildingName}");
+                    UpdateHintText(GetSmart("UI_Building", "hint_placement_continue", ("name", selectedBuilding.buildingName)));
                 }
                 else
                 {
                     // 资源不足，退出放置模式
-                    UpdateHintText("资源不足，放置结束");
+                    UpdateHintText(Get("UI_Building", "hint_placement_end_resources"));
                     ExitPlacementMode();
                 }
             }
             else
             {
-                UpdateHintText("资源不足，无法放置");
+                UpdateHintText(Get("UI_Building", "hint_insufficient_resources"));
                 CancelPlacement();
             }
         }
@@ -710,7 +716,7 @@ namespace PomodoroTimer.UI.Building
                 rotationHint.SetActive(false);
             }
 
-            UpdateHintText("点击建造物开始放置");
+            UpdateHintText(Get("UI_Building", "hint_click_to_place"));
         }
 
         /// <summary>

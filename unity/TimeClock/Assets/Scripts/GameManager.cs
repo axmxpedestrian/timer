@@ -44,19 +44,23 @@ namespace PomodoroTimer
             // 1. DataManager 必须第一个创建(加载存档)
             CreateManager<DataManager>(dataManagerPrefab, "DataManager");
 
-            // 2. TaskManager
+            // 2. LocalizationManager（依赖 DataManager 读取语言偏好）
+            CreateManager<LocalizationManager>(null, "LocalizationManager");
+            StartCoroutine(LocalizationManager.Instance.InitializeAsync());
+
+            // 3. TaskManager
             CreateManager<TaskManager>(taskManagerPrefab, "TaskManager");
 
-            // 3. StatisticsManager
+            // 4. StatisticsManager
             CreateManager<StatisticsManager>(statisticsManagerPrefab, "StatisticsManager");
 
-            // 4. PomodoroTimer
+            // 5. PomodoroTimer
             CreateManager<PomodoroTimerCore>(pomodoroTimerPrefab, "PomodoroTimer");
 
-            // 5. AudioManager
+            // 6. AudioManager
             CreateManager<AudioManager>(audioManagerPrefab, "AudioManager");
 
-            // 6. 应用保存的显示设置
+            // 7. 应用保存的显示设置
             ApplyDisplaySettings();
 
             Debug.Log("所有管理器初始化完成");

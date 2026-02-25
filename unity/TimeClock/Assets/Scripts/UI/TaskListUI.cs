@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using PomodoroTimer.Core;
 using PomodoroTimer.Data;
+using static PomodoroTimer.Utils.LocalizedText;
 
 // 解决命名空间冲突
 using PomodoroTimerCore = PomodoroTimer.Core.PomodoroTimer;
@@ -360,8 +361,8 @@ namespace PomodoroTimer.UI
                 
                 // 显示提示弹窗
                 ConfirmDialog.Instance?.ShowAlert(
-                    "无法删除",
-                    "该任务正在进行中，请先停止计时器再删除。"
+                    Get("UI_Tasks", "task_cannot_delete"),
+                    Get("UI_Tasks", "task_cannot_delete_msg")
                 );
                 return;
             }
@@ -486,8 +487,8 @@ namespace PomodoroTimer.UI
 
                 // 显示提示
                 ConfirmDialog.Instance?.ShowAlert(
-                    "无法切换任务",
-                    "计时器正在运行中,请先停止计时再切换任务."
+                    Get("UI_Tasks", "task_cannot_switch"),
+                    Get("UI_Tasks", "task_cannot_switch_msg")
                 );
                 return;
             }

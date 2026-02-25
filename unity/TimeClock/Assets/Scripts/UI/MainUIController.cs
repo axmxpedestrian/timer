@@ -6,6 +6,7 @@ using PomodoroTimer.Core;
 using PomodoroTimer.Data;
 using PomodoroTimer.Utils;
 using PomodoroTimer.Resource;
+using static PomodoroTimer.Utils.LocalizedText;
 
 // 解决命名空间冲突：为计时器类创建别名
 using PomodoroTimerCore = PomodoroTimer.Core.PomodoroTimer;
@@ -139,6 +140,12 @@ namespace PomodoroTimer.UI
                 yield return null;
             }
 
+            // 等待LocalizationManager初始化完成（异步加载 locale）
+            while (LocalizationManager.Instance == null || !LocalizationManager.Instance.IsInitialized)
+            {
+                yield return null;
+            }
+
             timer = PomodoroTimerCore.Instance;
 
             // 绑定按钮事件
@@ -151,6 +158,12 @@ namespace PomodoroTimer.UI
             if (DataManager.Instance != null)
             {
                 DataManager.Instance.OnDataLoaded += OnDataLoaded;
+            }
+
+            // 订阅语言切换事件，刷新所有动态文本
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLocaleChanged += OnLocaleChanged;
             }
 
             // 初始化UI状态
@@ -176,11 +189,28 @@ namespace PomodoroTimer.UI
         {
             UnsubscribeTimerEvents();
 
-            // 取消订阅数据加载事件
             if (DataManager.Instance != null)
             {
                 DataManager.Instance.OnDataLoaded -= OnDataLoaded;
             }
+
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLocaleChanged -= OnLocaleChanged;
+            }
+        }
+
+        /// <summary>
+        /// 语言切换回调 - 立即刷新所有动态文本
+        /// </summary>
+        private void OnLocaleChanged(UnityEngine.Localization.Locale newLocale)
+        {
+            if (!isInitialized) return;
+
+            UpdateStateDisplay();
+            UpdateRoundDisplay();
+            UpdateCurrentTaskDisplay();
+            UpdateTimerDisplay();
         }
         
         /// <summary>
@@ -652,21 +682,20 @@ namespace PomodoroTimer.UI
                 string statusText = timer.GetStateText();
                 if (timer.CurrentState == TimerState.Paused)
                 {
-                    statusText += " (已暂停)";
+                    statusText += " " + Get("UI_Timer", "timer_paused_suffix");
                 }
                 else if (timer.CurrentState == TimerState.Idle)
                 {
-                    // 空闲状态时显示准备状态
                     switch (timer.CurrentType)
                     {
                         case PomodoroType.Focus:
-                            statusText = "准备专注";
+                            statusText = Get("UI_Timer", "timer_state_ready_focus");
                             break;
                         case PomodoroType.ShortBreak:
-                            statusText = "准备短休息";
+                            statusText = Get("UI_Timer", "timer_state_ready_short_break");
                             break;
                         case PomodoroType.LongBreak:
-                            statusText = "准备长休息";
+                            statusText = Get("UI_Timer", "timer_state_ready_long_break");
                             break;
                     }
                 }
@@ -689,7 +718,8 @@ namespace PomodoroTimer.UI
                 }
                 else
                 {
-                    roundText.text = $"第 {timer.CurrentRound} 轮 / 共 {timer.TotalRounds} 轮";
+                    roundText.text = GetSmart("UI_Timer", "timer_round",
+                        ("currentRound", timer.CurrentRound), ("totalRounds", timer.TotalRounds));
                 }
             }
         }
@@ -706,12 +736,13 @@ namespace PomodoroTimer.UI
                 var task = timer.CurrentTask;
                 if (task != null)
                 {
-                    currentTaskText.text = $"当前任务: {task.taskName}";
+                    currentTaskText.text = GetSmart("UI_Timer", "timer_current_task",
+                        ("taskName", task.taskName));
                     currentTaskText.color = ColorPalette.GetTaskColor(task.colorIndex);
                 }
                 else
                 {
-                    currentTaskText.text = "请选择任务";
+                    currentTaskText.text = Get("UI_Timer", "timer_select_task");
                     currentTaskText.color = ColorPalette.Theme.TextSecondary;
                 }
             }

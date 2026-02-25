@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_Statistics_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: d536f3fbf84a3034ab93a901c6be3f44, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 1243047919691235364
+  m_TableData:
+  - m_Id: 51459856887808
+    m_Localized: Daily Focus Time (Last 7 Days)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51558733410304
+    m_Localized: Weekly Focus Time (Last 8 Weeks)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51603037843456
+    m_Localized: Monthly Focus Time (Last 12 Months)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51772001185792
+    m_Localized: Yearly Focus Time (Last 8 Years)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51819539427328
+    m_Localized: Average Daily Focus Distribution
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51891534655488
+    m_Localized: '{days} day streak'
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235364
+  - m_Id: 51947398590464
+    m_Localized: Avg {minutes} min/day
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235364
+  - m_Id: 52004864749568
+    m_Localized: All Tasks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52054995070976
+    m_Localized: (Deleted)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52122363981824
+    m_Localized: Count
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52181419782144
+    m_Localized: Total Time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 52219235627008
+    m_Localized: Count{arrow}
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235364
+  - m_Id: 52288680718336
+    m_Localized: Total Time{arrow}
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235364
+  references:
+    version: 2
+    RefIds:
+    - rid: 1243047919691235364
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 51891534655488
+        - id: 51947398590464
+        - id: 52219235627008
+        - id: 52288680718336

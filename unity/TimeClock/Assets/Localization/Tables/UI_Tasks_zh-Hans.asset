@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_Tasks_zh-Hans
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: zh-Hans
+  m_SharedData: {fileID: 11400000, guid: 6217b39b8757f1949a5949ea8d7b0ebe, type: 2}
+  m_Metadata:
+    m_Items:
+    - rid: 1243047919691235367
+  m_TableData:
+  - m_Id: 55270260436992
+    m_Localized: "\u4EFB\u52A1\u540D\u79F0\u4E0D\u80FD\u4E3A\u7A7A"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55307887538176
+    m_Localized: "\u65E0\u6CD5\u5220\u9664"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55344692555776
+    m_Localized: "\u8BE5\u4EFB\u52A1\u6B63\u5728\u8FDB\u884C\u4E2D\uFF0C\u8BF7\u5148\u505C\u6B62\u8BA1\u65F6\u5668\u518D\u5220\u9664\u3002"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55388082630656
+    m_Localized: "\u65E0\u6CD5\u5207\u6362\u4EFB\u52A1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55435771867136
+    m_Localized: "\u8BA1\u65F6\u5668\u6B63\u5728\u8FD0\u884C\u4E2D,\u8BF7\u5148\u505C\u6B62\u8BA1\u65F6\u518D\u5207\u6362\u4EFB\u52A1\u3002"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55485843468288
+    m_Localized: "(\u5DF2\u5220\u9664)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55521285337088
+    m_Localized: "{count} \u4E2A\u756A\u8304\u949F\xB7{time}"
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235367
+  - m_Id: 55573227597824
+    m_Localized: "\u672A\u9009\u62E9\u4EFB\u4F55\u4EFB\u52A1"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55710033211392
+    m_Localized: "\u5DF2\u9009\u62E9{count}\u4E2A\u4EFB\u52A1\uFF0C\u5171{total}\u6761\u8BB0\u5F55"
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235367
+  - m_Id: 55764240396288
+    m_Localized: "\u786E\u8BA4\u5220\u9664\u8BB0\u5F55"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 55807441727488
+    m_Localized: "\u786E\u5B9A\u8981\u5220\u9664\u4EE5\u4E0B\u4EFB\u52A1\u7684\u5386\u53F2\u8BB0\u5F55\u5417\uFF1F
+      \\n\\n{tasks}\\n\\n\u5171 {total} \u6761\u8BB0\u5F55\u5C06\u88AB\u6C38\u4E45\u5220\u9664\u3002"
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235367
+  - m_Id: 55871740407808
+    m_Localized: "\u7B49{count}\u4E2A\u4EFB\u52A1"
+    m_Metadata:
+      m_Items:
+      - rid: 1243047919691235367
+  references:
+    version: 2
+    RefIds:
+    - rid: 1243047919691235367
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 55521285337088
+        - id: 55710033211392
+        - id: 55807441727488
+        - id: 55871740407808
