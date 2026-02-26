@@ -32,6 +32,11 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7996f2780dbe467419c60de135d51995
+    m_Address: Assets/Localization/Tables/Bld_Nature Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 967124bdb6ca0e841bb90f1c0df7b253
     m_Address: Assets/Localization/Tables/UI_Genral Shared Data.asset
     m_ReadOnly: 1
@@ -44,6 +49,16 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: d536f3fbf84a3034ab93a901c6be3f44
     m_Address: Assets/Localization/Tables/UI_Statistics Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: eca0b942d8b1e8e44b699ce760e8358a
+    m_Address: Assets/Localization/Tables/Bld_Road Shared Data.asset
+    m_ReadOnly: 1
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: f4b9d6db47652594995c6b8b6ec65e55
+    m_Address: Assets/Localization/Tables/Bld_Residential Shared Data.asset
     m_ReadOnly: 1
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0

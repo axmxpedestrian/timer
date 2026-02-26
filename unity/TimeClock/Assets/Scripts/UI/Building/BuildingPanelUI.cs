@@ -3,6 +3,8 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Localization;
+using PomodoroTimer.Core;
 using PomodoroTimer.Map.Data;
 using PomodoroTimer.Map.Sprite2D;
 using PomodoroTimer.Resource;
@@ -110,8 +112,53 @@ namespace PomodoroTimer.UI.Building
                 tagFilter.OnFilterChanged -= OnTagFilterChanged;
             }
 
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLocaleChanged -= OnLocaleChanged;
+            }
+
             if (Instance == this)
                 Instance = null;
+        }
+
+        /// <summary>
+        /// 语言切换回调 - 刷新所有动态文本
+        /// </summary>
+        private void OnLocaleChanged(Locale newLocale)
+        {
+            // 刷新提示文本
+            if (!isPlacementMode)
+            {
+                UpdateHintText(Get("UI_Building", "hint_click_to_place"));
+            }
+
+            // 刷新分类按钮文本
+            RefreshCategoryButtonTexts();
+        }
+
+        /// <summary>
+        /// 刷新分类按钮的本地化文本
+        /// </summary>
+        private void RefreshCategoryButtonTexts()
+        {
+            string[] categoryNames = new string[]
+            {
+                Get("UI_Building", "category_all"),
+                Get("UI_Building", "panel_category_building"),
+                Get("UI_Building", "category_road"),
+                Get("UI_Building", "category_nature"),
+                Get("UI_Building", "category_facility"),
+                Get("UI_Building", "category_structure")
+            };
+
+            for (int i = 0; i < categoryButtons.Count && i < categoryNames.Length; i++)
+            {
+                var text = categoryButtons[i]?.GetComponentInChildren<TextMeshProUGUI>();
+                if (text != null)
+                {
+                    text.text = categoryNames[i];
+                }
+            }
         }
 
         private void Update()
@@ -199,6 +246,12 @@ namespace PomodoroTimer.UI.Building
             }
 
             UpdateHintText(Get("UI_Building", "hint_click_to_place"));
+
+            // 订阅语言切换事件，刷新所有动态文本
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLocaleChanged += OnLocaleChanged;
+            }
         }
 
         /// <summary>

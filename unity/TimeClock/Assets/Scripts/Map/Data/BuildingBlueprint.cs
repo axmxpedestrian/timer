@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using PomodoroTimer.Resource;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.Map.Data
 {
@@ -69,8 +70,14 @@ namespace PomodoroTimer.Map.Data
         [Tooltip("建筑模板ID")]
         public int blueprintId;
 
-        [Tooltip("建筑名称")]
+        [Tooltip("建筑名称（fallback，优先使用本地化）")]
         public string buildingName;
+
+        [Tooltip("本地化Key（查找 {key}_name 和 {key}_desc）")]
+        public string localizationKey;
+
+        [Tooltip("本地化表名（留空则默认 UI_Building）")]
+        public string localizationTable;
 
         [Tooltip("建筑类别")]
         public BuildingCategory category;
@@ -78,7 +85,7 @@ namespace PomodoroTimer.Map.Data
         [Tooltip("预览图标")]
         public Sprite previewIcon;
 
-        [Tooltip("建筑描述")]
+        [Tooltip("建筑描述（fallback，优先使用本地化）")]
         [TextArea(2, 4)]
         public string description;
 
@@ -167,6 +174,38 @@ namespace PomodoroTimer.Map.Data
 
         [Tooltip("资源生成类型标签（如：食物、金币、科技点）")]
         public List<string> productionTypeTags = new List<string>();
+
+        /// <summary>
+        /// 获取本地化建筑名称，fallback 到 buildingName 字段
+        /// </summary>
+        public string GetLocalizedName()
+        {
+            if (!string.IsNullOrEmpty(localizationKey))
+            {
+                string table = string.IsNullOrEmpty(localizationTable) ? "UI_Building" : localizationTable;
+                string entryKey = localizationKey + "_name";
+                string localized = Get(table, entryKey);
+                if (localized != entryKey)
+                    return localized;
+            }
+            return buildingName;
+        }
+
+        /// <summary>
+        /// 获取本地化建筑描述，fallback 到 description 字段
+        /// </summary>
+        public string GetLocalizedDescription()
+        {
+            if (!string.IsNullOrEmpty(localizationKey))
+            {
+                string table = string.IsNullOrEmpty(localizationTable) ? "UI_Building" : localizationTable;
+                string entryKey = localizationKey + "_desc";
+                string localized = Get(table, entryKey);
+                if (localized != entryKey)
+                    return localized;
+            }
+            return description;
+        }
 
         /// <summary>
         /// 按分类索引获取对应的标签列表

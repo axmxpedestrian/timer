@@ -96,7 +96,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 51123385626624
-    m_Key: label_clear_history
+    m_Key: label_manage_history
     m_Metadata:
       m_Items: []
   - m_Id: 51316755623936
@@ -113,6 +113,18 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 61575788326912
     m_Key: tab_setting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 509034176016384
+    m_Key: btn_default
+    m_Metadata:
+      m_Items: []
+  - m_Id: 509084545413120
+    m_Key: btn_clear_history
+    m_Metadata:
+      m_Items: []
+  - m_Id: 509179554787328
+    m_Key: btn_save
     m_Metadata:
       m_Items: []
   m_Metadata:

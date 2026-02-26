@@ -5,6 +5,7 @@ using TMPro;
 using PomodoroTimer.Core;
 using PomodoroTimer.Data;
 using PomodoroTimer.Utils;
+using UnityEngine.Localization;
 using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.UI
@@ -68,7 +69,7 @@ namespace PomodoroTimer.UI
         [SerializeField] private TextMeshProUGUI streakText;
         [SerializeField] private TextMeshProUGUI averageText;
         [SerializeField] private TextMeshProUGUI totalCoinsText;
-        
+
         [Header("任务筛选")]
         [SerializeField] private TMP_Dropdown taskFilterDropdown;
         
@@ -116,6 +117,29 @@ namespace PomodoroTimer.UI
             SelectTab(StatisticsViewType.Daily);
             SetDisplayMode(StatisticsDisplayMode.Chart);
             isInitialized = true;
+
+            // 订阅语言切换事件，刷新所有动态文本
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLocaleChanged += OnLocaleChanged;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLocaleChanged -= OnLocaleChanged;
+            }
+        }
+
+        private void OnLocaleChanged(Locale newLocale)
+        {
+            if (!isInitialized) return;
+
+            SetupTaskDropdown();
+            UpdateTabVisual();
+            RefreshStatistics();
         }
         
         private void BindEvents()
@@ -509,7 +533,7 @@ namespace PomodoroTimer.UI
             
             if (totalPomodorosText != null)
             {
-                totalPomodorosText.text = $"🍅 {overallStats.totalPomodorosCompleted}";
+                totalPomodorosText.text = $"<sprite name=\"tomato\"> {overallStats.totalPomodorosCompleted}";
             }
             
             if (totalTimeText != null)
@@ -519,13 +543,13 @@ namespace PomodoroTimer.UI
             
             if (streakText != null)
             {
-                streakText.text = "🔥 " + GetSmart("UI_Statistics", "streak_days",
+                streakText.text = "<sprite name=\"inspiration\"> " + GetSmart("UI_Statistics", "streak_days",
                     ("days", overallStats.currentStreak));
             }
             
             if (totalCoinsText != null)
             {
-                totalCoinsText.text = $"🪙 {overallStats.totalCoins}";
+                totalCoinsText.text = $"<sprite name=\"coin\"> {overallStats.totalCoins}";
             }
             
             if (averageText != null)

@@ -21,7 +21,7 @@ namespace PomodoroTimer.UI.Building
         {
             blueprint = bp;
             iconSprite = bp.GetPreviewSprite();
-            buildingName = bp.buildingName;
+            buildingName = bp.GetLocalizedName();
             costs = bp.buildCosts;
             techLevel = bp.techLevel;
             isUnlocked = bp.isUnlocked;

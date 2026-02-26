@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
-  m_Name: UI_Genral Shared Data
+  m_Name: UI_General Shared Data
   m_EditorClassIdentifier: 
-  m_TableCollectionName: UI_Genral
+  m_TableCollectionName: UI_General
   m_TableCollectionNameGuidString: 967124bdb6ca0e841bb90f1c0df7b253
   m_Entries:
   - m_Id: 45798922219520
@@ -85,6 +85,14 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 88158045564928
     m_Key: header_setting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 431265337405440
+    m_Key: btn_build
+    m_Metadata:
+      m_Items: []
+  - m_Id: 431347352825856
+    m_Key: btn_demolish
     m_Metadata:
       m_Items: []
   m_Metadata:

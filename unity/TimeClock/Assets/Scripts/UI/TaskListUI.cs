@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Localization;
 using PomodoroTimer.Core;
 using PomodoroTimer.Data;
 using static PomodoroTimer.Utils.LocalizedText;
@@ -155,6 +156,12 @@ namespace PomodoroTimer.UI
                 TaskManager.Instance.OnTaskDeleted += OnTaskDeleted;
                 TaskManager.Instance.OnTaskListChanged += OnTaskListChanged;
             }
+
+            // 订阅语言切换事件，刷新任务项的统计文本
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLocaleChanged += OnLocaleChanged;
+            }
         }
         
         /// <summary>
@@ -174,6 +181,11 @@ namespace PomodoroTimer.UI
                 TaskManager.Instance.OnTaskDeleted -= OnTaskDeleted;
                 TaskManager.Instance.OnTaskListChanged -= OnTaskListChanged;
             }
+
+            if (LocalizationManager.Instance != null)
+            {
+                LocalizationManager.Instance.OnLocaleChanged -= OnLocaleChanged;
+            }
         }
         
         /// <summary>
@@ -192,6 +204,27 @@ namespace PomodoroTimer.UI
         {
             Log(" 任务列表变化，刷新显示");
             RefreshTaskList();
+        }
+
+        /// <summary>
+        /// 语言切换回调 - 刷新所有任务项的显示文本
+        /// </summary>
+        private void OnLocaleChanged(Locale newLocale)
+        {
+            if (!isInitialized) return;
+
+            Log(" 语言切换，刷新任务项显示");
+            // 刷新每个任务项的显示（统计数据文本会重新走本地化逻辑）
+            var tasks = TaskManager.Instance?.Tasks;
+            if (tasks == null) return;
+
+            foreach (var task in tasks)
+            {
+                if (task != null && taskItemMap.TryGetValue(task.id, out var itemUI))
+                {
+                    itemUI.UpdateDisplay(task);
+                }
+            }
         }
         
         /// <summary>

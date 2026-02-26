@@ -71,7 +71,7 @@ namespace PomodoroTimer.Resource
 
         // 访问器 — 从 blueprint 读取，消除重复
         public int BlueprintId => blueprint != null ? blueprint.blueprintId : 0;
-        public string BuildingName => blueprint != null ? blueprint.buildingName : "";
+        public string BuildingName => blueprint != null ? blueprint.GetLocalizedName() : "";
         public ResourceCost[] BuildCosts => blueprint != null ? blueprint.buildCosts : null;
 
         [Header("升级花费")]

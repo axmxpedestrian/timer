@@ -72,6 +72,26 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 1243047919691235368
+  - m_Id: 432611620909056
+    m_Localized: Task List
+    m_Metadata:
+      m_Items: []
+  - m_Id: 432779338543104
+    m_Localized: + Task
+    m_Metadata:
+      m_Items: []
+  - m_Id: 432950872993792
+    m_Localized: Select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 433109656760320
+    m_Localized: Edit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 433848013647872
+    m_Localized: New Task
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

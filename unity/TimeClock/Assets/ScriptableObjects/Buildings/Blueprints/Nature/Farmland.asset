@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blueprintId: 2
   buildingName: "\u519C\u7530"
+  localizationKey: farmland
+  localizationTable: Bld_Nature
   category: 3
   previewIcon: {fileID: 5707395175976934104, guid: e1badd667e47b494494eace3d73173fb, type: 3}
   description: "\u9EA6\u7530"

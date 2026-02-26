@@ -119,7 +119,7 @@ namespace PomodoroTimer.UI
             // 更新番茄钟计数
             if (pomodoroCountText != null)
             {
-                pomodoroCountText.text = $"🍅 {task.completedPomodoros}";
+                pomodoroCountText.text = $"<sprite name=\"tomato\"> {task.completedPomodoros}";
             }
             
             // 更新总时间

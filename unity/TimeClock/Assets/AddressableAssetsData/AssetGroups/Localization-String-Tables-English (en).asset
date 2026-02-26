@@ -35,14 +35,32 @@ MonoBehaviour:
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: a9bdcd07b5f3c86428bf57a47cf62f43
+    m_Address: Bld_Nature_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: b06b896859775ea4492280380201dedb
     m_Address: UI_Building_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: c9b377491b1565f41832d46984e251d0
+    m_Address: Bld_Residential_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e617e99e29eef77409b52990dfc592cc
-    m_Address: UI_Genral_en
+    m_Address: UI_General_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ee0c24d7320079a46b4f2a99af50e144
+    m_Address: Bld_Road_en
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en

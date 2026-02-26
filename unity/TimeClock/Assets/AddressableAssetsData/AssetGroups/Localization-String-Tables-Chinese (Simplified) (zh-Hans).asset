@@ -17,6 +17,24 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: b1a1c0323f0cd1646bad62443351635e
   m_SerializeEntries:
+  - m_GUID: 4082a7f617d7f2940a1eee8ac54f4ac0
+    m_Address: Bld_Residential_zh-Hans
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-zh-Hans
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4c6c0b2f05ec26b40afe5a6181c8f2c6
+    m_Address: Bld_Nature_zh-Hans
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-zh-Hans
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6e980f4f4de41b94fa6ebdcb6cc33e5f
+    m_Address: Bld_Road_zh-Hans
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-zh-Hans
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 6f75192d18eb1d0429052cb040ec5721
     m_Address: UI_Setting_zh-Hans
     m_ReadOnly: 1
@@ -24,7 +42,7 @@ MonoBehaviour:
     - Locale-zh-Hans
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 7e72426f10cbb084786fa48126926c19
-    m_Address: UI_Genral_zh-Hans
+    m_Address: UI_General_zh-Hans
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-zh-Hans

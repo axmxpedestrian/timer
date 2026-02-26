@@ -418,7 +418,7 @@ namespace PomodoroTimer.UI.Building
                 var building = buildingManager.GetBuilding(id);
                 if (building?.Blueprint != null)
                 {
-                    names.Add(building.Blueprint.buildingName);
+                    names.Add(building.Blueprint.GetLocalizedName());
                 }
             }
 

@@ -548,7 +548,7 @@ namespace PomodoroTimer.UI
         {
             if (coinText == null || ResourceManager.Instance == null) return;
             long currentCoins = ResourceManager.Instance.GetAmount(ResourceType.Coin);
-            coinText.text = $"🪙 {ResourceDefinition.FormatAmount(currentCoins)}";
+            coinText.text = $"<sprite name=\"coin\"> {ResourceDefinition.FormatAmount(currentCoins)}";
             lastDisplayedCoins = (int)currentCoins;
         }
 

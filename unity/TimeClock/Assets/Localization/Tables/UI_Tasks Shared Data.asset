@@ -63,6 +63,26 @@ MonoBehaviour:
     m_Key: history_etc_tasks
     m_Metadata:
       m_Items: []
+  - m_Id: 432611620909056
+    m_Key: tasklist_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 432779338543104
+    m_Key: btn_add_task
+    m_Metadata:
+      m_Items: []
+  - m_Id: 432950872993792
+    m_Key: btn_sel_task
+    m_Metadata:
+      m_Items: []
+  - m_Id: 433109656760320
+    m_Key: btn_edit_task
+    m_Metadata:
+      m_Items: []
+  - m_Id: 433848013647872
+    m_Key: new_task_tilte
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

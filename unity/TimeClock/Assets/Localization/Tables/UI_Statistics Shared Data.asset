@@ -67,6 +67,46 @@ MonoBehaviour:
     m_Key: table_header_time_sorted
     m_Metadata:
       m_Items: []
+  - m_Id: 741277016354816
+    m_Key: title_statistics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 741361724518400
+    m_Key: title_chart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 741627710500864
+    m_Key: title_table
+    m_Metadata:
+      m_Items: []
+  - m_Id: 741724414373888
+    m_Key: title_habit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 742041713471488
+    m_Key: title_daliy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 742109581504512
+    m_Key: title_weekly
+    m_Metadata:
+      m_Items: []
+  - m_Id: 742158927491072
+    m_Key: title_monthly
+    m_Metadata:
+      m_Items: []
+  - m_Id: 742226996850688
+    m_Key: title_yearly
+    m_Metadata:
+      m_Items: []
+  - m_Id: 752287303430144
+    m_Key: table_tag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 752354013835264
+    m_Key: table_name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

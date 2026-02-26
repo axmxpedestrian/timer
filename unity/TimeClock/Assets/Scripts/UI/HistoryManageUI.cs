@@ -232,7 +232,7 @@ namespace PomodoroTimer.UI
                 
                 // 统计信息
                 string timeStr = StatisticsManager.FormatTime(info.totalSeconds);
-                texts[1].text = "🍅 " + GetSmart("UI_Tasks", "history_stats",
+                texts[1].text = "<sprite name=\"tomato\"> " + GetSmart("UI_Tasks", "history_stats",
                     ("count", info.recordCount), ("time", timeStr));
             }
             

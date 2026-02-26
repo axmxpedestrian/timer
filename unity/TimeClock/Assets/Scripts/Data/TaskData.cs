@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.Data
 {
@@ -83,11 +84,13 @@ namespace PomodoroTimer.Data
         {
             int hours = (int)(totalFocusTimeSeconds / 3600);
             int minutes = (int)((totalFocusTimeSeconds % 3600) / 60);
-            
+
             if (hours > 0)
-                return $"{hours}小时{minutes}分钟";
+                return GetSmart("UI_General", "time_hours_minutes",
+                    ("hours", hours), ("minutes", minutes));
             else
-                return $"{minutes}分钟";
+                return GetSmart("UI_General", "time_minutes",
+                    ("minutes", minutes));
         }
         
         /// <summary>

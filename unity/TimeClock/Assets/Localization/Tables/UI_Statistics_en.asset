@@ -42,13 +42,11 @@ MonoBehaviour:
   - m_Id: 51891534655488
     m_Localized: '{days} day streak'
     m_Metadata:
-      m_Items:
-      - rid: 1243047919691235364
+      m_Items: []
   - m_Id: 51947398590464
     m_Localized: Avg {minutes} min/day
     m_Metadata:
-      m_Items:
-      - rid: 1243047919691235364
+      m_Items: []
   - m_Id: 52004864749568
     m_Localized: All Tasks
     m_Metadata:
@@ -75,6 +73,46 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 1243047919691235364
+  - m_Id: 741277016354816
+    m_Localized: Statistics
+    m_Metadata:
+      m_Items: []
+  - m_Id: 741361724518400
+    m_Localized: Chart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 741627710500864
+    m_Localized: Table
+    m_Metadata:
+      m_Items: []
+  - m_Id: 741724414373888
+    m_Localized: Habit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 742041713471488
+    m_Localized: Daily
+    m_Metadata:
+      m_Items: []
+  - m_Id: 742109581504512
+    m_Localized: Weekly
+    m_Metadata:
+      m_Items: []
+  - m_Id: 742158927491072
+    m_Localized: Monthly
+    m_Metadata:
+      m_Items: []
+  - m_Id: 742226996850688
+    m_Localized: Yearly
+    m_Metadata:
+      m_Items: []
+  - m_Id: 752287303430144
+    m_Localized: Tag
+    m_Metadata:
+      m_Items: []
+  - m_Id: 752354013835264
+    m_Localized: Task Name
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -83,7 +121,5 @@ MonoBehaviour:
       data:
         m_Entries: 
         m_SharedEntries:
-        - id: 51891534655488
-        - id: 51947398590464
         - id: 52219235627008
         - id: 52288680718336

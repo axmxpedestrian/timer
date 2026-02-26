@@ -10,102 +10,104 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
-  m_Name: UI_Genral_zh-Hans
+  m_Name: UI_General_en
   m_EditorClassIdentifier: 
   m_LocaleId:
-    m_Code: zh-Hans
+    m_Code: en
   m_SharedData: {fileID: 11400000, guid: 967124bdb6ca0e841bb90f1c0df7b253, type: 2}
   m_Metadata:
     m_Items:
-    - rid: 1243047919691235361
+    - rid: 1243047919691235362
   m_TableData:
   - m_Id: 45798922219520
-    m_Localized: "\u786E\u8BA4"
+    m_Localized: Confirm
     m_Metadata:
       m_Items: []
   - m_Id: 45856312881152
-    m_Localized: "\u53D6\u6D88"
+    m_Localized: Cancel
     m_Metadata:
       m_Items: []
   - m_Id: 45920150188032
-    m_Localized: "\u5220\u9664"
+    m_Localized: Delete
     m_Metadata:
       m_Items: []
   - m_Id: 46051905859584
-    m_Localized: "\u77E5\u9053\u4E86"
+    m_Localized: OK
     m_Metadata:
       m_Items: []
   - m_Id: 46084856311808
-    m_Localized: "\u4FDD\u5B58"
+    m_Localized: Save
     m_Metadata:
       m_Items: []
   - m_Id: 46127646601216
-    m_Localized: "\u6062\u590D\u9ED8\u8BA4"
+    m_Localized: Reset Default
     m_Metadata:
       m_Items: []
   - m_Id: 46171330277376
-    m_Localized: "\u5173\u95ED"
+    m_Localized: Close
     m_Metadata:
       m_Items: []
   - m_Id: 46216767172608
-    m_Localized: "\u786E\u8BA4\u64CD\u4F5C"
+    m_Localized: Confirm Action
     m_Metadata:
       m_Items: []
   - m_Id: 46303526350848
-    m_Localized: "\u786E\u8BA4\u5220\u9664"
+    m_Localized: Confirm Delete
     m_Metadata:
       m_Items: []
   - m_Id: 46445897805824
-    m_Localized: "\u786E\u5B9A\u8981\u5220\u9664\u300C{itemName}\u300D \u5417? \\n\u6B64\u64CD\u4F5C\u65E0\u6CD5\u64A4\u9500\u3002"
+    m_Localized: Delete "{itemName}"?\nThis cannot be undone.
     m_Metadata:
-      m_Items:
-      - rid: 1243047919691235361
+      m_Items: []
   - m_Id: 46541020426240
-    m_Localized: "\u7248\u672C {version}"
+    m_Localized: Version {version}
     m_Metadata:
       m_Items:
-      - rid: 1243047919691235361
+      - rid: 1243047919691235362
   - m_Id: 46626164797440
-    m_Localized: "{hours}\u5C0F\u65F6{minutes}\u5206\u949F"
+    m_Localized: '{hours}h {minutes}min'
     m_Metadata:
-      m_Items:
-      - rid: 1243047919691235361
+      m_Items: []
   - m_Id: 46681592524800
-    m_Localized: "{hours}\u5C0F\u65F6"
+    m_Localized: '{hours}h'
     m_Metadata:
       m_Items:
-      - rid: 1243047919691235361
+      - rid: 1243047919691235362
   - m_Id: 46715625107456
-    m_Localized: "{minutes}\u5206\u949F"
+    m_Localized: '{minutes} min'
     m_Metadata:
-      m_Items:
-      - rid: 1243047919691235361
+      m_Items: []
   - m_Id: 46807178375168
-    m_Localized: "\u5206\u949F"
+    m_Localized: min
     m_Metadata:
       m_Items: []
   - m_Id: 87777823518720
-    m_Localized: "text\u5B57\u9AD4\u6E2C\u8A66,Ni\xF1o,\u0153uvre,\u0442\u0435\u0441\u0442\u043E\u0432\u044B\u0439,\u3072\u3089\u304C\u306A,\U0001F4B0@\u300C:0.2"
+    m_Localized: "ver\u5B57\u9AD4\u6E2C\u8A66,Ni\xF1o,\u0153uvre,\u0442\u0435\u0441\u0442\u043E\u0432\u044B\u0439,\u3072\u3089\u304C\u306A,\U0001F4B0@\u300C\uFF1A0.2"
     m_Metadata:
       m_Items: []
   - m_Id: 87984816615424
-    m_Localized: "\u7EDF\u8BA1"
+    m_Localized: Statistic
     m_Metadata:
       m_Items: []
   - m_Id: 88158045564928
-    m_Localized: "\u8BBE\u7F6E"
+    m_Localized: Setting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 431265337405440
+    m_Localized: Build
+    m_Metadata:
+      m_Items: []
+  - m_Id: 431347352825856
+    m_Localized: Demolish
     m_Metadata:
       m_Items: []
   references:
     version: 2
     RefIds:
-    - rid: 1243047919691235361
+    - rid: 1243047919691235362
       type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
       data:
         m_Entries: 
         m_SharedEntries:
-        - id: 46445897805824
         - id: 46541020426240
-        - id: 46626164797440
         - id: 46681592524800
-        - id: 46715625107456

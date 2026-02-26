@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using static PomodoroTimer.Utils.LocalizedText;
 
 namespace PomodoroTimer.Resource
 {
@@ -61,7 +62,7 @@ namespace PomodoroTimer.Resource
             this.onCancel = onCancel;
 
             if (titleText != null)
-                titleText.text = $"建造 {buildingName}";
+                titleText.text = GetSmart("UI_Building", "preview_build_title", ("name", buildingName));
 
             ShowPreview(preview);
         }
@@ -81,7 +82,8 @@ namespace PomodoroTimer.Resource
             this.onCancel = onCancel;
 
             if (titleText != null)
-                titleText.text = $"升级 {buildingName} (Lv.{currentLevel} → Lv.{currentLevel + 1})";
+                titleText.text = GetSmart("UI_Building", "preview_upgrade_title",
+                    ("name", buildingName), ("from", currentLevel), ("to", currentLevel + 1));
 
             ShowPreview(preview);
         }

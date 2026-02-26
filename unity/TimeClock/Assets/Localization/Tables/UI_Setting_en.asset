@@ -118,6 +118,18 @@ MonoBehaviour:
     m_Localized: setting
     m_Metadata:
       m_Items: []
+  - m_Id: 509034176016384
+    m_Localized: Default
+    m_Metadata:
+      m_Items: []
+  - m_Id: 509084545413120
+    m_Localized: Clear History
+    m_Metadata:
+      m_Items: []
+  - m_Id: 509179554787328
+    m_Localized: Save
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

@@ -202,7 +202,7 @@ namespace PomodoroTimer.Resource
         /// </summary>
         public void ShowCoinGain(Vector3 worldPosition, int amount)
         {
-            ShowFloatingText(worldPosition, $"+{amount} 🪙", new Color(1f, 0.85f, 0.2f));
+            ShowFloatingText(worldPosition, $"+{amount} <sprite name=\"coin\">", new Color(1f, 0.85f, 0.2f));
         }
     }
 }

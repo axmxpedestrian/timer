@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blueprintId: 1
   buildingName: "\u5C0F\u5C4B"
+  localizationKey: house_small
+  localizationTable: Bld_Residential
   category: 1
   previewIcon: {fileID: -1154542849751525046, guid: 801c5238a20694a46b6baf92ea45fc90, type: 3}
   description: "\u2014\u4E2A\u6E29\u99A8\u7684\u5C0F\u623F\u5B50"
