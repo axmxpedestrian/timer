@@ -48,15 +48,24 @@ namespace PomodoroTimer.Resource
         [Header("资源定义")]
         [SerializeField] private ResourceDefinition[] resourceDefinitions;
 
+        [Header("容量设置")]
+        [Tooltip("基础保底容量（即使没有建筑也有的最低存储上限）")]
+        [SerializeField] private ResourceCapacity[] defaultBaseCapacities;
+
         // 资源数据
         private Dictionary<ResourceType, long> resources = new Dictionary<ResourceType, long>();
         private Dictionary<ResourceType, bool> unlockedResources = new Dictionary<ResourceType, bool>();
         private Dictionary<ResourceType, ResourceDefinition> definitionMap = new Dictionary<ResourceType, ResourceDefinition>();
 
+        // 容量数据
+        private Dictionary<ResourceType, long> baseCapacities = new Dictionary<ResourceType, long>();
+        private Dictionary<ResourceType, long> buildingCapacities = new Dictionary<ResourceType, long>();
+
         // 事件
         public event EventHandler<ResourceChangedEventArgs> OnResourceChanged;
         public event EventHandler<ResourceUnlockedEventArgs> OnResourceUnlocked;
         public event Action OnResourcesLoaded;
+        public event Action<ResourceType, long> OnCapacityChanged;
 
         // 属性
         public bool IsInitialized { get; private set; }
@@ -75,6 +84,7 @@ namespace PomodoroTimer.Resource
             }
 
             InitializeDefinitionMap();
+            InitializeBaseCapacities();
         }
 
         private void OnDestroy()
@@ -97,6 +107,20 @@ namespace PomodoroTimer.Resource
             }
         }
 
+        private void InitializeBaseCapacities()
+        {
+            baseCapacities.Clear();
+            if (defaultBaseCapacities == null) return;
+
+            foreach (var cap in defaultBaseCapacities)
+            {
+                if (cap != null && cap.capacity > 0)
+                {
+                    baseCapacities[cap.resourceType] = cap.capacity;
+                }
+            }
+        }
+
         /// <summary>
         /// 初始化资源系统（从存档加载或新建）
         /// </summary>
@@ -104,6 +128,7 @@ namespace PomodoroTimer.Resource
         {
             resources.Clear();
             unlockedResources.Clear();
+            buildingCapacities.Clear();
 
             // 初始化所有资源类型
             foreach (ResourceType type in Enum.GetValues(typeof(ResourceType)))
@@ -113,6 +138,7 @@ namespace PomodoroTimer.Resource
             }
 
             // 从存档恢复
+            var loadedFromSave = new HashSet<ResourceType>();
             if (saveData != null && saveData.resourceEntries != null)
             {
                 foreach (var entry in saveData.resourceEntries)
@@ -121,23 +147,125 @@ namespace PomodoroTimer.Resource
                     {
                         resources[type] = entry.amount;
                         unlockedResources[type] = entry.unlocked;
+                        loadedFromSave.Add(type);
                     }
                 }
             }
 
-            // 应用默认解锁
+            // 应用默认解锁（仅对存档中不存在的资源设置初始值）
             foreach (var def in definitionMap.Values)
             {
                 if (def.unlockedByDefault && !unlockedResources[def.resourceType])
                 {
                     unlockedResources[def.resourceType] = true;
-                    resources[def.resourceType] = def.initialAmount;
+                    if (!loadedFromSave.Contains(def.resourceType))
+                    {
+                        resources[def.resourceType] = def.initialAmount;
+                    }
                 }
             }
 
             IsInitialized = true;
             OnResourcesLoaded?.Invoke();
         }
+
+        #region 容量系统
+
+        /// <summary>
+        /// 获取某资源的总容量上限（基础保底 + 建筑提供）
+        /// 返回 0 表示该资源不受容量限制
+        /// </summary>
+        public long GetCapacity(ResourceType type)
+        {
+            long baseCap = baseCapacities.TryGetValue(type, out var bc) ? bc : 0;
+            long buildingCap = buildingCapacities.TryGetValue(type, out var bbc) ? bbc : 0;
+
+            long total = baseCap + buildingCap;
+            return total;
+        }
+
+        /// <summary>
+        /// 检查某资源是否受容量限制
+        /// 只有在 baseCapacities 或 buildingCapacities 中出现过的资源才受限
+        /// </summary>
+        public bool HasCapacity(ResourceType type)
+        {
+            return baseCapacities.ContainsKey(type) || buildingCapacities.ContainsKey(type);
+        }
+
+        /// <summary>
+        /// 由建筑系统调用：用新的建筑容量字典替换当前建筑容量，并截断超出上限的资源
+        /// </summary>
+        public void RecalculateAllCapacities(Dictionary<ResourceType, long> newBuildingCapacities)
+        {
+            // 收集所有受容量影响的资源类型（旧 + 新）
+            var affectedTypes = new HashSet<ResourceType>();
+            foreach (var type in buildingCapacities.Keys)
+                affectedTypes.Add(type);
+            if (newBuildingCapacities != null)
+            {
+                foreach (var type in newBuildingCapacities.Keys)
+                    affectedTypes.Add(type);
+            }
+            // 基础容量涉及的类型也需要通知
+            foreach (var type in baseCapacities.Keys)
+                affectedTypes.Add(type);
+
+            // 替换建筑容量
+            buildingCapacities.Clear();
+            if (newBuildingCapacities != null)
+            {
+                foreach (var kvp in newBuildingCapacities)
+                {
+                    buildingCapacities[kvp.Key] = kvp.Value;
+                }
+            }
+
+            // 对每个受影响的资源类型：截断超出上限的部分并通知
+            foreach (var type in affectedTypes)
+            {
+                long cap = GetCapacity(type);
+                OnCapacityChanged?.Invoke(type, cap);
+
+                // 截断超出容量的资源
+                if (HasCapacity(type))
+                {
+                    long current = GetAmount(type);
+                    if (current > cap)
+                    {
+                        SetResource(type, cap, "CapacityClamp");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 将所有受容量限制的资源截断到上限（用于存档加载后校验）
+        /// </summary>
+        public void ClampResourcesToCapacity()
+        {
+            foreach (var type in baseCapacities.Keys)
+            {
+                long cap = GetCapacity(type);
+                long current = GetAmount(type);
+                if (current > cap)
+                {
+                    SetResource(type, cap, "CapacityClamp");
+                }
+            }
+            // 也检查建筑容量涉及的类型
+            foreach (var type in buildingCapacities.Keys)
+            {
+                long cap = GetCapacity(type);
+                long current = GetAmount(type);
+                if (current > cap)
+                {
+                    SetResource(type, cap, "CapacityClamp");
+                }
+            }
+        }
+
+        #endregion
 
         #region 资源查询
 
@@ -231,6 +359,14 @@ namespace PomodoroTimer.Resource
 
             long oldAmount = GetAmount(type);
             long newAmount = Math.Max(0, oldAmount + amount); // 不允许负数
+
+            // 容量上限限制：正向添加时，不超过容量上限
+            if (amount > 0 && HasCapacity(type))
+            {
+                long cap = GetCapacity(type);
+                newAmount = Math.Min(newAmount, cap);
+            }
+
             resources[type] = newAmount;
 
             // 触发事件

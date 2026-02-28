@@ -74,8 +74,7 @@ MonoBehaviour:
   - m_Id: 53138950025216
     m_Localized: 'Placing {name} - Q/E rotate, Click place, ESC cancel '
     m_Metadata:
-      m_Items:
-      - rid: 1243047919691235366
+      m_Items: []
   - m_Id: 53219866537984
     m_Localized: Insufficient resources
     m_Metadata:
@@ -163,6 +162,58 @@ MonoBehaviour:
     m_Localized: "Upgrade {name} (Lv.{from} \u2192Lv.{to})"
     m_Metadata:
       m_Items: []
+  - m_Id: 1156688211963904
+    m_Localized: Build Cost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1156891270803456
+    m_Localized: Free
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1156938192482304
+    m_Localized: Production
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1156975865720832
+    m_Localized: Production
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1157044635529216
+    m_Localized: Category
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1157198478405632
+    m_Localized: 'Category:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1157261371994112
+    m_Localized: 'Type:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1157339889364992
+    m_Localized: 'Style:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1157395048656896
+    m_Localized: Special
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1157448140156928
+    m_Localized: Not implemented yet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1230956178272256
+    m_Localized: Storage Capacity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1231085316698112
+    m_Localized: '{resource} + {amount}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1265287030468608
+    m_Localized: Storage
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
@@ -171,7 +222,6 @@ MonoBehaviour:
       data:
         m_Entries: 
         m_SharedEntries:
-        - id: 53138950025216
         - id: 53272232423424
         - id: 54387795652608
         - id: 54582126145536

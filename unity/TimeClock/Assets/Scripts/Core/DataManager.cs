@@ -35,6 +35,11 @@ namespace PomodoroTimer.Core
         /// </summary>
         public BuildingSystemSaveData GetBuildingSystemSaveData() => saveData?.buildingSystem;
 
+        /// <summary>
+        /// 本次启动是否为全新存档（存档文件不存在时为 true）
+        /// </summary>
+        public bool IsNewSave { get; private set; }
+
         public event Action OnDataLoaded;
         public event Action OnDataSaved;
 
@@ -87,12 +92,14 @@ namespace PomodoroTimer.Core
             {
                 if (File.Exists(SaveFilePath))
                 {
+                    IsNewSave = false;
                     string json = File.ReadAllText(SaveFilePath);
                     saveData = JsonUtility.FromJson<SaveData>(json);
-                    
+
                     if (saveData == null)
                     {
                         saveData = new SaveData();
+                        IsNewSave = true;
                         Log("存档解析失败，创建新存档");
                     }
                     else
@@ -123,6 +130,7 @@ namespace PomodoroTimer.Core
                 }
                 else
                 {
+                    IsNewSave = true;
                     saveData = new SaveData();
                     Log("创建新存档");
                 }
@@ -195,8 +203,24 @@ namespace PomodoroTimer.Core
                 // 再等一帧，确保 ModularBuildingManager.Start() 已执行完毕（池初始化、蓝图字典等）
                 yield return null;
 
-                ModularBuildingManager.Instance.LoadFromSaveData(saveData.buildingSystem);
-                Log($"建筑系统数据加载完成，共 {saveData.buildingSystem.buildings.Count} 个建筑");
+                // 如果 TryLoadFromSaveData 已在 ModularBuildingManager.Start() 中加载了建筑，
+                // 跳过重复加载——否则 RemoveAllBuildings() 会触发 RecalculateCapacities()，
+                // 在建筑容量为 0 时将资源截断到 defaultBaseCapacities 上限
+                if (ModularBuildingManager.Instance.GetActiveBuildingCount() == 0)
+                {
+                    ModularBuildingManager.Instance.LoadFromSaveData(saveData.buildingSystem);
+                    Log($"建筑系统数据加载完成，共 {saveData.buildingSystem.buildings.Count} 个建筑");
+                }
+            }
+
+            // 建筑加载完成后，重算容量并校验资源上限
+            if (BuildingResourceSystemManager.Instance != null)
+            {
+                BuildingResourceSystemManager.Instance.RecalculateCapacities();
+            }
+            if (ResourceManager.Instance != null)
+            {
+                ResourceManager.Instance.ClampResourcesToCapacity();
             }
         }
         

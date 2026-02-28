@@ -24,6 +24,19 @@ namespace PomodoroTimer.Resource
     }
 
     /// <summary>
+    /// 资源容量配置 — 定义建筑提供的资源存储上限
+    /// </summary>
+    [Serializable]
+    public class ResourceCapacity
+    {
+        [Tooltip("资源类型")]
+        public ResourceType resourceType;
+
+        [Tooltip("该建筑为此资源提供的容量")]
+        public long capacity;
+    }
+
+    /// <summary>
     /// 资源生产配置
     /// </summary>
     [Serializable]

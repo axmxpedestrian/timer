@@ -1,0 +1,93 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dbff9c76d85bdc4fbba326b89d03d92, type: 3}
+  m_Name: LoggingCabin
+  m_EditorClassIdentifier: 
+  blueprintId: 6
+  buildingName: "\u4F10\u6728\u5C0F\u5C4B"
+  localizationKey: LoggingCabin
+  localizationTable: Bld_Facility
+  category: 4
+  previewIcon: {fileID: -8756986139984421759, guid: 04a36ec2e91194742973a810ddb92d6b, type: 3}
+  description: 
+  baseSize: {x: 1, y: 1}
+  occupancyMask:
+    width: 1
+    height: 1
+    cells: 01
+  heightLevel: 0
+  yOffset: 0
+  floors: []
+  defaultFloorCount: 1
+  partSlots:
+  - slotType: 0
+    slotId: found1
+    isRequired: 1
+    allowMultiple: 0
+    maxCount: 0
+    availableVariants:
+    - variantId: found1
+      frames:
+      - {fileID: -7952439459764328939, guid: b987d34e0c151464d85909f4595d519b, type: 3}
+      directionalViews: []
+      isTintable: 0
+      defaultTint: {r: 0, g: 0, b: 0, a: 0}
+      localOffset: {x: 0, y: 0}
+      sortingOrderOffset: 0
+    defaultVariantIndex: 0
+  - slotType: 1
+    slotId: frame1
+    isRequired: 1
+    allowMultiple: 0
+    maxCount: 0
+    availableVariants:
+    - variantId: frame1
+      frames:
+      - {fileID: 3055761572286634128, guid: c03dc3758538c7b4c9b154ed11682dd9, type: 3}
+      directionalViews: []
+      isTintable: 0
+      defaultTint: {r: 0, g: 0, b: 0, a: 0}
+      localOffset: {x: 0, y: 0}
+      sortingOrderOffset: 0
+    defaultVariantIndex: 0
+  defaultParts: []
+  frameRate: 8
+  hasIdleAnimation: 0
+  effects: []
+  clickSound: {fileID: 0}
+  placeSound: {fileID: 0}
+  ambientSound: {fileID: 0}
+  buildCosts:
+  - resourceType: 0
+    amount: 20
+  - resourceType: 3
+    amount: 10
+  - resourceType: 2
+    amount: 10
+  storageCapacities:
+  - resourceType: 2
+    capacity: 10
+  - resourceType: 3
+    capacity: 50
+  buildTimeSeconds: 5
+  maxHealth: 100
+  isWalkable: 0
+  techLevel: 0
+  unlockConditionDesc: 
+  buildingTypeTags: []
+  styleTags: []
+  consumptionTypeTags:
+  - "\u4EE3\u5E01"
+  - "\u6728\u6750"
+  - "\u52B3\u52A8\u529B"
+  productionTypeTags:
+  - "\u6728\u6750"

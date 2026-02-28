@@ -151,6 +151,58 @@ MonoBehaviour:
     m_Key: preview_upgrade_title
     m_Metadata:
       m_Items: []
+  - m_Id: 1156688211963904
+    m_Key: detail_cost_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1156891270803456
+    m_Key: detail_cost_free
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1156938192482304
+    m_Key: detail_production_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1156975865720832
+    m_Key: detail_production_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1157044635529216
+    m_Key: detail_category_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1157198478405632
+    m_Key: detail_category_label
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1157261371994112
+    m_Key: detail_type_tags
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1157339889364992
+    m_Key: detail_style_tags
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1157395048656896
+    m_Key: detail_special_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1157448140156928
+    m_Key: detail_special_not_implemented
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1230956178272256
+    m_Key: detail_capacity_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1231085316698112
+    m_Key: detail_capacity_item
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1265287030468608
+    m_Key: type_storage
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

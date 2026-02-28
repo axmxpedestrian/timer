@@ -104,6 +104,12 @@ namespace PomodoroTimer.UI.Building
             isDemolishMode = true;
             ClearSelection();
 
+            // 隐藏建筑详情面板
+            if (BuildingDetailPanelUI.Instance != null)
+            {
+                BuildingDetailPanelUI.Instance.Hide();
+            }
+
             // 隐藏干扰面板
             MainUIController.Instance?.EnterBuildMode();
 

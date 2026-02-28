@@ -337,10 +337,10 @@ namespace PomodoroTimer.UI
         /// <param name="keepTimerText">是否保留计时器文本</param>
         private void SetUIVisibility(bool visible, bool keepTimerText)
         {
-            header?.SetActive(visible);
-            controlButtons?.SetActive(visible);
-            taskSection?.SetActive(visible);
-            coinDisplay?.SetActive(visible);
+            if (header != null) header.SetActive(visible);
+            if (controlButtons != null) controlButtons.SetActive(visible);
+            if (taskSection != null) taskSection.SetActive(visible);
+            // if (coinDisplay != null) coinDisplay.SetActive(visible);
 
             if (timerSection != null)
             {
@@ -431,6 +431,7 @@ namespace PomodoroTimer.UI
 
         /// <summary>
         /// 设置建造模式下需要隐藏的面板（TaskSection、ControlButtons、TimerSection）
+        /// 进入放置/销毁模式时完全隐藏 TimerSection（包括 TimerText）
         /// </summary>
         private void SetBuildModePanels(bool visible)
         {
@@ -439,17 +440,7 @@ namespace PomodoroTimer.UI
 
             if (timerSection != null)
             {
-                // 隐藏时只保留 TimerText，与 hideUIState=1 行为一致
-                if (visible)
-                {
-                    timerSection.SetActive(true);
-                    SetTimerSectionChildrenVisibility(true);
-                }
-                else
-                {
-                    timerSection.SetActive(true);
-                    SetTimerSectionChildrenVisibility(false);
-                }
+                timerSection.SetActive(visible);
             }
 
             // 关闭/恢复这些面板上的 Raycast Target

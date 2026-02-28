@@ -285,9 +285,11 @@ namespace PomodoroTimer.Map.Sprite2D
         {
             if (buildingInstance == null) return;
 
-            var gridPos = buildingInstance.GridPosition;
+            // 多格建筑使用占用格中最大 (x+y) 的格子计算深度，
+            // 避免锚点处 (x+y) 较小导致整栋建筑错误地渲染在近处建筑之上。
+            var sortingGridPos = GetMaxDepthGridPosition();
             int heightLevel = buildingInstance.Blueprint?.heightLevel ?? 0;
-            int baseOrder = IsometricSortingHelper.CalculateBuildingSortingOrder(gridPos, heightLevel);
+            int baseOrder = IsometricSortingHelper.CalculateBuildingSortingOrder(sortingGridPos, heightLevel);
             int rotation = buildingInstance.Rotation;
 
             foreach (var part in partRenderers)
@@ -302,6 +304,32 @@ namespace PomodoroTimer.Map.Sprite2D
                         + part.variant.GetSortingOrderOffsetForRotation(rotation);
                 }
             }
+        }
+
+        /// <summary>
+        /// 获取占用格中 (x+y) 最大的格子位置，用于深度排序。
+        /// (x+y) 越大 → 离镜头越远 → sortingOrder 越小，
+        /// 以此保证多格建筑不会错误遮挡近处的建筑。
+        /// </summary>
+        private Vector2Int GetMaxDepthGridPosition()
+        {
+            var positions = buildingInstance.GetOccupiedGridPositions();
+            if (positions.Count == 0) return buildingInstance.GridPosition;
+
+            Vector2Int maxPos = positions[0];
+            int maxSum = maxPos.x + maxPos.y;
+
+            for (int i = 1; i < positions.Count; i++)
+            {
+                int sum = positions[i].x + positions[i].y;
+                if (sum > maxSum)
+                {
+                    maxSum = sum;
+                    maxPos = positions[i];
+                }
+            }
+
+            return maxPos;
         }
 
         /// <summary>

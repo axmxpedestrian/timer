@@ -26,6 +26,14 @@ MonoBehaviour:
     m_Localized: Produces food
     m_Metadata:
       m_Items: []
+  - m_Id: 339514157264896
+    m_Localized: Abundant with various forms of life
+    m_Metadata:
+      m_Items: []
+  - m_Id: 339441461587968
+    m_Localized: Forest
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

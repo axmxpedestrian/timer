@@ -23,6 +23,14 @@ MonoBehaviour:
     m_Key: farmland_desc
     m_Metadata:
       m_Items: []
+  - m_Id: 339441461587968
+    m_Key: forest_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 339514157264896
+    m_Key: forest_desc
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

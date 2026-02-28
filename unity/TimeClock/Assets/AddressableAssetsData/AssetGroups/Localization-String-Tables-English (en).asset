@@ -17,6 +17,12 @@ MonoBehaviour:
     m_SerializedData: []
   m_GUID: 4aa9e894eaf03f243ad13bd67b1ac411
   m_SerializeEntries:
+  - m_GUID: 4212f6176f0be5e41bcbf6c61e40438d
+    m_Address: Bld_Facility_en
+    m_ReadOnly: 1
+    m_SerializedLabels:
+    - Locale-en
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 577916f449d0806418dd05d26de438e9
     m_Address: UI_Statistics_en
     m_ReadOnly: 1
@@ -46,6 +52,7 @@ MonoBehaviour:
     m_ReadOnly: 1
     m_SerializedLabels:
     - Locale-en
+    - Preload
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: c9b377491b1565f41832d46984e251d0
     m_Address: Bld_Residential_en

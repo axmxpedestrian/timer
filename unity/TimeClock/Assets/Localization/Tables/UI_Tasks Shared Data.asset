@@ -83,6 +83,22 @@ MonoBehaviour:
     m_Key: new_task_tilte
     m_Metadata:
       m_Items: []
+  - m_Id: 1448749028962304
+    m_Key: edit_add_task
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1448997302398976
+    m_Key: edit_delete_task
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1449130505105408
+    m_Key: edit_canel_task
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1449192719216640
+    m_Key: edit_save_task
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

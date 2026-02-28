@@ -92,6 +92,22 @@ MonoBehaviour:
     m_Localized: New Task
     m_Metadata:
       m_Items: []
+  - m_Id: 1448749028962304
+    m_Localized: 'Add Task:'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1448997302398976
+    m_Localized: Delete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1449130505105408
+    m_Localized: Canel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1449192719216640
+    m_Localized: Save
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

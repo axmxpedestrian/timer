@@ -141,6 +141,9 @@ namespace PomodoroTimer.Map.Data
         [Tooltip("建造消耗资源列表")]
         public ResourceCost[] buildCosts;
 
+        [Tooltip("该建筑提供的资源存储容量（为空表示不提供存储）")]
+        public ResourceCapacity[] storageCapacities;
+
         [Tooltip("建造时间（秒）")]
         public int buildTimeSeconds;
 

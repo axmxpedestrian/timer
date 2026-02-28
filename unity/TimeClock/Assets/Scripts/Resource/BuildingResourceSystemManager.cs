@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using PomodoroTimer.Map.Sprite2D;
 
 namespace PomodoroTimer.Resource
 {
@@ -41,10 +43,52 @@ namespace PomodoroTimer.Resource
             InitializeConfigMap();
         }
 
+        private void Start()
+        {
+            StartCoroutine(SubscribeBuildingEvents());
+        }
+
         private void OnDestroy()
         {
             if (Instance == this)
                 Instance = null;
+
+            // 取消订阅建筑事件
+            if (ModularBuildingManager.Instance != null)
+            {
+                ModularBuildingManager.Instance.OnBuildingPlaced -= OnBuildingPlacedHandler;
+                ModularBuildingManager.Instance.OnBuildingRemoved -= OnBuildingRemovedHandler;
+            }
+        }
+
+        /// <summary>
+        /// 等待 ModularBuildingManager 就绪后订阅建筑放置/拆除事件
+        /// </summary>
+        private IEnumerator SubscribeBuildingEvents()
+        {
+            float timeout = 5f;
+            float elapsed = 0f;
+            while (ModularBuildingManager.Instance == null && elapsed < timeout)
+            {
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            if (ModularBuildingManager.Instance != null)
+            {
+                ModularBuildingManager.Instance.OnBuildingPlaced += OnBuildingPlacedHandler;
+                ModularBuildingManager.Instance.OnBuildingRemoved += OnBuildingRemovedHandler;
+            }
+        }
+
+        private void OnBuildingPlacedHandler(ModularBuildingInstance building)
+        {
+            RecalculateCapacities();
+        }
+
+        private void OnBuildingRemovedHandler(ModularBuildingInstance building)
+        {
+            RecalculateCapacities();
         }
 
         private void InitializeConfigMap()
@@ -99,6 +143,8 @@ namespace PomodoroTimer.Resource
             producer.OnProductionStateChanged += (state) => OnBuildingProductionStateChanged?.Invoke(instanceId, state);
 
             activeProducers[instanceId] = producer;
+
+            RecalculateCapacities();
             return producer;
         }
 
@@ -114,6 +160,8 @@ namespace PomodoroTimer.Resource
                     Destroy(producer.gameObject);
                 }
                 activeProducers.Remove(instanceId);
+
+                RecalculateCapacities();
             }
         }
 
@@ -223,6 +271,38 @@ namespace PomodoroTimer.Resource
         {
             if (config == null) return;
             configMap[config.BlueprintId] = config;
+        }
+
+        /// <summary>
+        /// 重新计算所有已放置建筑提供的资源容量
+        /// 遍历 ModularBuildingManager 中的所有建筑实例（而非仅 activeProducers），
+        /// 因为有些建筑只提供存储不生产资源
+        /// </summary>
+        public void RecalculateCapacities()
+        {
+            var caps = new Dictionary<ResourceType, long>();
+            var mgr = ModularBuildingManager.Instance;
+
+            if (mgr != null)
+            {
+                foreach (var building in mgr.GetAllBuildings())
+                {
+                    var bp = building.Blueprint;
+                    if (bp?.storageCapacities == null) continue;
+
+                    foreach (var sc in bp.storageCapacities)
+                    {
+                        if (sc == null || sc.capacity <= 0) continue;
+
+                        if (caps.ContainsKey(sc.resourceType))
+                            caps[sc.resourceType] += sc.capacity;
+                        else
+                            caps[sc.resourceType] = sc.capacity;
+                    }
+                }
+            }
+
+            ResourceManager.Instance?.RecalculateAllCapacities(caps);
         }
     }
 }

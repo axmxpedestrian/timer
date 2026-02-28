@@ -648,6 +648,12 @@ namespace PomodoroTimer.UI.Building
             selectedBuilding = data;
             isPlacementMode = true;
 
+            // 显示建筑详情面板
+            if (BuildingDetailPanelUI.Instance != null)
+            {
+                BuildingDetailPanelUI.Instance.Show(data.blueprint);
+            }
+
             // 开始放置预览
             var placementController = BuildingPlacementController.Instance;
             if (placementController != null)
@@ -758,6 +764,12 @@ namespace PomodoroTimer.UI.Building
         {
             isPlacementMode = false;
             selectedBuilding = null;
+
+            // 隐藏建筑详情面板
+            if (BuildingDetailPanelUI.Instance != null)
+            {
+                BuildingDetailPanelUI.Instance.Hide();
+            }
 
             if (buildingScrollView != null)
             {

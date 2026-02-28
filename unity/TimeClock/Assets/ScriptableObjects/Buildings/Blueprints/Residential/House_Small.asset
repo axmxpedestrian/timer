@@ -138,13 +138,21 @@ MonoBehaviour:
     amount: 20
   - resourceType: 1
     amount: 10
+  storageCapacities:
+  - resourceType: 1
+    capacity: 25
+  - resourceType: 2
+    capacity: 15
+  - resourceType: 3
+    capacity: 5
+  - resourceType: 4
+    capacity: 5
   buildTimeSeconds: 5
   maxHealth: 100
   isWalkable: 0
   techLevel: 0
   unlockConditionDesc: 
-  buildingTypeTags:
-  - "\u4F4F\u5B85"
+  buildingTypeTags: []
   styleTags:
   - "\u7B80\u6D01"
   consumptionTypeTags:

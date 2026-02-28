@@ -54,13 +54,15 @@ MonoBehaviour:
   buildCosts:
   - resourceType: 0
     amount: 5
-  buildTimeSeconds: 5
+  storageCapacities:
+  - resourceType: 1
+    capacity: 30
+  buildTimeSeconds: 0
   maxHealth: 100
   isWalkable: 0
   techLevel: 0
   unlockConditionDesc: 
-  buildingTypeTags:
-  - "\u81EA\u7136"
+  buildingTypeTags: []
   styleTags: []
   consumptionTypeTags:
   - "\u4EE3\u5E01"
