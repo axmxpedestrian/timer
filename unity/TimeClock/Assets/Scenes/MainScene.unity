@@ -7849,8 +7849,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 628222947}
-  - {fileID: 1827406586}
-  - {fileID: 1925561732}
+  - {fileID: 471031647}
   - {fileID: 720604691}
   - {fileID: 1453390583}
   - {fileID: 620218445}
@@ -7860,6 +7859,8 @@ RectTransform:
   - {fileID: 1460833011}
   - {fileID: 1060164967}
   - {fileID: 365782078}
+  - {fileID: 1925561732}
+  - {fileID: 1827406586}
   - {fileID: 16702387}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -9113,7 +9114,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 471031646}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -9121,7 +9122,7 @@ RectTransform:
   - {fileID: 1401678134}
   - {fileID: 1691419061}
   - {fileID: 989671030}
-  m_Father: {fileID: 628222947}
+  m_Father: {fileID: 438163406}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -12399,7 +12400,6 @@ RectTransform:
   - {fileID: 529861792}
   - {fileID: 604147278}
   - {fileID: 1508376458}
-  - {fileID: 471031647}
   - {fileID: 2047806192}
   m_Father: {fileID: 438163406}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -13801,6 +13801,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ca1317333a58cc040aa8954512414600, type: 2}
   initialResources:
   - resourceType: 0
+    amount: 300
+  - resourceType: 1
+    amount: 30
+  - resourceType: 3
     amount: 10
 --- !u!1 &720604690
 GameObject:
@@ -16932,7 +16936,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7190801998840901310, guid: e21af3d97dea8b644a79bf3f742c1536, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0
+      value: -37
       objectReference: {fileID: 0}
     - target: {fileID: 7190801998840901310, guid: e21af3d97dea8b644a79bf3f742c1536, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -28327,6 +28331,50 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!1 &1415296159
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1415296161}
+  - component: {fileID: 1415296160}
+  m_Layer: 0
+  m_Name: GlobalInputManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1415296160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415296159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adda374d5a548be4ca4492318d1d80fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &1415296161
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1415296159}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 674.1932, y: 385.92627, z: -4.756198}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1420653381
 GameObject:
   m_ObjectHideFlags: 0
@@ -31968,7 +32016,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1564178657}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 56eb0353ae6e5124bb35b17aff880f16, type: 3}
   m_Name: 
@@ -35077,7 +35125,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 330, y: 150}
+  m_SizeDelta: {x: 150, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1691419062
 MonoBehaviour:
@@ -35658,6 +35706,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: eb48f0c44afec8342990ecdc2ae7843f, type: 2}
   - {fileID: 11400000, guid: ef3e56bb753a8db4f8314389a9585304, type: 2}
   - {fileID: 11400000, guid: 229f8549828c7624ebf26c1a349b2a12, type: 2}
+  buildingPreviewMaterial: {fileID: 2100000, guid: f11cb955fafb5714e85026acd1b03ee7, type: 2}
   enableTimeSystem: 1
   enableAudioSystem: 1
 --- !u!4 &1720174709
@@ -42453,3 +42502,4 @@ SceneRoots:
   - {fileID: 2146087336}
   - {fileID: 1720174709}
   - {fileID: 1304551159}
+  - {fileID: 1415296161}

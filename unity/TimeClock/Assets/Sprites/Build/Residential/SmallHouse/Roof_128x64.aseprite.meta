@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1a7b797571b7e1d429809752d78b53f0
+guid: fc3be741c3babcf419c14e1f82a84ddd
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 639062732332137270
+  platformSettingsDirtyTick: 639078996974707560
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -122,18 +122,18 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Door_128x64
+  - name: Roof_128x64
     originalName: 
-    pivot: {x: -2.1000001, y: -0.8888889}
+    pivot: {x: 0.49565214, y: -0.7857143}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
       x: 4
       y: 4
-      width: 10
-      height: 18
-    spriteID: 08b709ed5285c014a9d6c45f7b8f13c9
+      width: 115
+      height: 42
+    spriteID: a6f2d5fa178f43242b7d19bc380abffa
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -145,21 +145,21 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: -273256206
-    name: Door_128x64
+    guid: -1799688
+    name: Roof_128x64
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: Door_128x64
+    - name: Roof_128x64
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
-        x: 85
-        y: 16
-        width: 10
-        height: 18
-      spriteId: 08b709ed5285c014a9d6c45f7b8f13c9
+        x: 7
+        y: 33
+        width: 115
+        height: 42
+      spriteId: a6f2d5fa178f43242b7d19bc380abffa
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -215,4 +215,4 @@ ScriptedImporter:
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 128, y: 128}
-  previousTextureSize: {x: 32, y: 32}
+  previousTextureSize: {x: 128, y: 64}

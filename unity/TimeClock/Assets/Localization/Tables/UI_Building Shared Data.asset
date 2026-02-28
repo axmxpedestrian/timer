@@ -203,6 +203,82 @@ MonoBehaviour:
     m_Key: type_storage
     m_Metadata:
       m_Items: []
+  - m_Id: 1649257886871552
+    m_Key: res_coin
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1649287326691328
+    m_Key: res_food
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1649371338600448
+    m_Key: res_labor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1649550494101504
+    m_Key: res_wood
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1649602407002112
+    m_Key: res_mineral
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1649637253279744
+    m_Key: res_storage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1649742819717120
+    m_Key: res_energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1650044151099392
+    m_Key: res_transport
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1650077353209856
+    m_Key: res_education
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1650117471727616
+    m_Key: res_scenery
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1650150011138048
+    m_Key: res_welfare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1650168134725632
+    m_Key: res_productivity
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1650225831571456
+    m_Key: res_research
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1650988205043712
+    m_Key: "detail_category_tags_\u4F4F\u5B85"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1651024288641024
+    m_Key: "detail_category_tags_\u5546\u94FA"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1651061999628288
+    m_Key: "detail_category_tags_\u4ED3\u5E93"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1651281986678784
+    m_Key: "detail_style_tags_\u4E2D\u5F0F"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1651325234147328
+    m_Key: "detail_style_tags_\u6B27\u5F0F\r"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1651411947188224
+    m_Key: "detail_style_tags_\u73B0\u4EE3"
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

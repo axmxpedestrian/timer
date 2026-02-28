@@ -116,6 +116,15 @@ namespace PomodoroTimer.UI
             // 重置待选语言，并更新高亮
             pendingLanguageCode = null;
             UpdateLanguageHighlights();
+
+            // 屏蔽游戏键盘输入（防止在输入框打字时移动地图）
+            GlobalInputManager.Instance?.PushInputBlock();
+        }
+
+        private void OnDisable()
+        {
+            // 恢复游戏键盘输入
+            GlobalInputManager.Instance?.PopInputBlock();
         }
 
         private void Start()

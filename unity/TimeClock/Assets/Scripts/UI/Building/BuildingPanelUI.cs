@@ -568,6 +568,9 @@ namespace PomodoroTimer.UI.Building
             // 打开时立即允许交互
             SetPanelInteractable(true);
 
+            // 隐藏 TimerSection、ControlButtons、TaskSection，避免遮挡地图
+            MainUIController.Instance?.EnterBuildMode();
+
             // 刷新数据
             RefreshAffordableState();
 
@@ -587,6 +590,9 @@ namespace PomodoroTimer.UI.Building
 
             // 取消放置模式
             CancelPlacement();
+
+            // 恢复 TimerSection、ControlButtons、TaskSection
+            MainUIController.Instance?.ExitBuildMode();
 
             OnPanelToggled?.Invoke(false);
         }
@@ -637,22 +643,30 @@ namespace PomodoroTimer.UI.Building
         {
             if (data == null || !data.isUnlocked) return;
 
-            // 检查资源是否足够
+            // 资源不足：取消当前放置模式，显示详情面板供查看
             if (!data.isAffordable)
             {
+                CancelPlacement();
+
+                // 取消放置后再显示详情（CancelPlacement 会 Hide DetailPanel）
+                if (BuildingDetailPanelUI.Instance != null)
+                {
+                    BuildingDetailPanelUI.Instance.Show(data.blueprint);
+                }
+
                 UpdateHintText(Get("UI_Building", "hint_insufficient_resources"));
                 return;
             }
 
-            // 选中建造物
-            selectedBuilding = data;
-            isPlacementMode = true;
-
-            // 显示建筑详情面板
+            // 始终显示建筑详情面板
             if (BuildingDetailPanelUI.Instance != null)
             {
                 BuildingDetailPanelUI.Instance.Show(data.blueprint);
             }
+
+            // 选中建造物，进入放置模式
+            selectedBuilding = data;
+            isPlacementMode = true;
 
             // 开始放置预览
             var placementController = BuildingPlacementController.Instance;

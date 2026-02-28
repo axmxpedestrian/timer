@@ -38,6 +38,8 @@ namespace PomodoroTimer.Map
         [Header("模块化建筑设置")]
         [SerializeField] private bool enableModularBuildings = true;
         [SerializeField] private BuildingBlueprint[] buildingBlueprints;
+        [Tooltip("放置预览材质（使用 Custom/BuildingPreview Shader）")]
+        [SerializeField] private Material buildingPreviewMaterial;
 
         [Header("全局系统")]
         [SerializeField] private bool enableTimeSystem = true;
@@ -124,8 +126,19 @@ namespace PomodoroTimer.Map
             var modularManager = mapSystemRoot.AddComponent<ModularBuildingManager>();
             SetupModularBuildingManager(modularManager);
 
-            // 添加放置控制器
-            mapSystemRoot.AddComponent<BuildingPlacementController>();
+            // 添加放置控制器，并注入预览材质
+            var placementController = mapSystemRoot.AddComponent<BuildingPlacementController>();
+            SetupPlacementController(placementController);
+        }
+
+        private void SetupPlacementController(BuildingPlacementController controller)
+        {
+            if (buildingPreviewMaterial == null) return;
+
+            var type = typeof(BuildingPlacementController);
+            var flags = BindingFlags.NonPublic | BindingFlags.Instance;
+
+            SetFieldValue(type, controller, "previewMaterial", buildingPreviewMaterial, flags);
         }
 
         private void SetupModularBuildingManager(ModularBuildingManager manager)

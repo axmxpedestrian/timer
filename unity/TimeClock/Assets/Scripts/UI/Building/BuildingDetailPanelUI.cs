@@ -225,8 +225,8 @@ namespace PomodoroTimer.UI.Building
             if (blueprint == null) return;
 
             currentBlueprint = blueprint;
-            UpdateContent(blueprint);
 
+            // 先激活面板，再更新内容（UpdateContent 中有 StartCoroutine）
             if (panelRoot != null)
                 panelRoot.SetActive(true);
             if (canvasGroup != null)
@@ -235,6 +235,8 @@ namespace PomodoroTimer.UI.Building
                 canvasGroup.blocksRaycasts = true;
                 canvasGroup.interactable = true;
             }
+
+            UpdateContent(blueprint);
 
             // 每次显示新建筑时滚动到顶部
             if (scrollRect != null)
@@ -362,8 +364,7 @@ namespace PomodoroTimer.UI.Building
             {
                 if (sb.Length > 0) sb.Append("\n");
 
-                var def = ResourceManager.Instance?.GetDefinition(cost.resourceType);
-                string resName = def != null ? def.resourceName : cost.resourceType.ToString();
+                string resName = GetLocalizedResourceName(cost.resourceType);
                 string sprite = GetResourceSprite(cost.resourceType);
                 string amount = ResourceDefinition.FormatAmount(cost.amount);
 
@@ -402,8 +403,7 @@ namespace PomodoroTimer.UI.Building
                 foreach (var c in config.consumptions)
                 {
                     if (sb.Length > 0) sb.Append("\n");
-                    var def = ResourceManager.Instance?.GetDefinition(c.resourceType);
-                    string resName = def != null ? def.resourceName : c.resourceType.ToString();
+                    string resName = GetLocalizedResourceName(c.resourceType);
                     string sprite = GetResourceSprite(c.resourceType);
                     string amount = ResourceDefinition.FormatAmount(c.amountPerCycle);
                     sb.Append($"<color=#FF9966>{sprite} -{amount} {resName}/{c.cycleSeconds}s</color>");
@@ -416,8 +416,7 @@ namespace PomodoroTimer.UI.Building
                 foreach (var p in config.productions)
                 {
                     if (sb.Length > 0) sb.Append("\n");
-                    var def = ResourceManager.Instance?.GetDefinition(p.resourceType);
-                    string resName = def != null ? def.resourceName : p.resourceType.ToString();
+                    string resName = GetLocalizedResourceName(p.resourceType);
                     string sprite = GetResourceSprite(p.resourceType);
                     string amount = ResourceDefinition.FormatAmount(p.amountPerCycle);
                     sb.Append($"<color=#66FF66>{sprite} +{amount} {resName}/{p.cycleSeconds}s</color>");
@@ -447,8 +446,7 @@ namespace PomodoroTimer.UI.Building
 
                 if (sb.Length > 0) sb.Append("\n");
 
-                var def = ResourceManager.Instance?.GetDefinition(sc.resourceType);
-                string resName = def != null ? def.resourceName : sc.resourceType.ToString();
+                string resName = GetLocalizedResourceName(sc.resourceType);
                 string sprite = GetResourceSprite(sc.resourceType);
                 string amount = ResourceDefinition.FormatAmount(sc.capacity);
 
@@ -478,14 +476,14 @@ namespace PomodoroTimer.UI.Building
             if (bp.buildingTypeTags != null && bp.buildingTypeTags.Count > 0)
             {
                 sb.Append($"\n<b>{Get("UI_Building", "detail_type_tags")}</b> ");
-                sb.Append(string.Join("、", bp.buildingTypeTags));
+                sb.Append(LocalizeTags("detail_category_tags", bp.buildingTypeTags));
             }
 
             // 风格标签
             if (bp.styleTags != null && bp.styleTags.Count > 0)
             {
                 sb.Append($"\n<b>{Get("UI_Building", "detail_style_tags")}</b> ");
-                sb.Append(string.Join("、", bp.styleTags));
+                sb.Append(LocalizeTags("detail_style_tags", bp.styleTags));
             }
 
             categoryText.text = sb.ToString();
@@ -508,6 +506,39 @@ namespace PomodoroTimer.UI.Building
             if (ResourceSpriteNames.TryGetValue(type, out string spriteName))
                 return $"<sprite name=\"{spriteName}\">";
             return "";
+        }
+
+        /// <summary>
+        /// 获取本地化的资源名称
+        /// 查找 Bld_Nature 表中的 "res_{type小写}" 条目，fallback 到 ResourceDefinition.resourceName
+        /// </summary>
+        private string GetLocalizedResourceName(ResourceType type)
+        {
+            string key = "res_" + type.ToString().ToLower();
+            string localized = Get("UI_Building", key);
+            if (localized != key)
+                return localized;
+
+            // fallback: ResourceDefinition 上的硬编码名称
+            var def = ResourceManager.Instance?.GetDefinition(type);
+            return def != null ? def.resourceName : type.ToString();
+        }
+
+        /// <summary>
+        /// 本地化标签列表
+        /// 查找 UI_Building 表中的 "{prefix}_{tag小写}" 条目，fallback 到原始标签字符串
+        /// </summary>
+        private string LocalizeTags(string prefix, List<string> tags)
+        {
+            var sb = new StringBuilder();
+            for (int i = 0; i < tags.Count; i++)
+            {
+                if (i > 0) sb.Append("、");
+                string key = prefix + "_" + tags[i].ToLower();
+                string localized = Get("UI_Building", key);
+                sb.Append(localized != key ? localized : tags[i]);
+            }
+            return sb.ToString();
         }
     }
 }

@@ -7,6 +7,7 @@ using PomodoroTimer.Core;
 using PomodoroTimer.Utils;
 using static PomodoroTimer.Utils.LocalizedText;
 
+
 namespace PomodoroTimer.UI
 {
     /// <summary>
@@ -215,6 +216,9 @@ namespace PomodoroTimer.UI
 
             isShowing = true;
             showPending = false;
+
+            // 屏蔽游戏键盘输入
+            GlobalInputManager.Instance?.PushInputBlock();
         }
 
         /// <summary>
@@ -254,6 +258,12 @@ namespace PomodoroTimer.UI
         /// </summary>
         public void Hide()
         {
+            // 恢复游戏键盘输入（仅在确实正在显示时才 Pop，避免不配对）
+            if (isShowing)
+            {
+                GlobalInputManager.Instance?.PopInputBlock();
+            }
+
             dialogPanel?.SetActive(false);
             isShowing = false;
 

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using PomodoroTimer.Map.Sprite2D;
 using PomodoroTimer.Core;
+using PomodoroTimer.Map.Sprite2D;
 
 namespace PomodoroTimer.Map
 {
@@ -104,8 +104,14 @@ namespace PomodoroTimer.Map
             // 检查是否在UI上
             bool isOverUI = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
 
-            HandleKeyboardInput();
-            HandleKeyboardZoom();
+            // 检查键盘输入是否被 UI 面板屏蔽（如输入框聚焦、弹窗打开等）
+            bool inputBlocked = GlobalInputManager.Instance != null && GlobalInputManager.Instance.IsGameInputBlocked;
+
+            if (!inputBlocked)
+            {
+                HandleKeyboardInput();
+                HandleKeyboardZoom();
+            }
             HandleMouseDrag(isOverUI);
             HandleMouseScroll(isOverUI);
             if (enableEdgeScroll) HandleEdgeScroll();

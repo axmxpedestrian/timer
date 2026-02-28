@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using PomodoroTimer.Core;
 using PomodoroTimer.Map.Data;
 using PomodoroTimer.UI;
 using PomodoroTimer.UI.Building;
@@ -75,6 +76,14 @@ namespace PomodoroTimer.Map.Sprite2D
             }
 
             CreateContainers();
+        }
+
+        private void Start()
+        {
+            // 延迟到 Start 创建预览材质：
+            // 本组件通过 AddComponent 动态添加，Awake 时 previewMaterial 字段尚未被注入，
+            // MapSystemInitializer 在 AddComponent 后通过反射注入 previewMaterial，
+            // 到 Start 时字段已就绪，确保 Build 中正确使用 Custom/BuildingPreview Shader。
             CreatePreviewMaterial();
         }
 
@@ -153,9 +162,6 @@ namespace PomodoroTimer.Map.Sprite2D
             currentRotation = 0;
             currentFloorCount = floorCount > 0 ? floorCount : blueprint.defaultFloorCount;
             isPlacing = true;
-
-            // 隐藏干扰面板
-            MainUIController.Instance?.EnterBuildMode();
 
             BuildPreviewVisuals();
             previewObject.SetActive(true);
@@ -245,12 +251,6 @@ namespace PomodoroTimer.Map.Sprite2D
             currentBlueprint = null;
             previewObject.SetActive(false);
             ClearPreview();
-
-            // 恢复面板（仅在销毁模式也未激活时）
-            if (DemolishController.Instance == null || !DemolishController.Instance.IsDemolishMode)
-            {
-                MainUIController.Instance?.ExitBuildMode();
-            }
         }
 
         #endregion
@@ -259,17 +259,20 @@ namespace PomodoroTimer.Map.Sprite2D
 
         private void HandleInput()
         {
+            // 键盘输入被 UI 面板屏蔽时跳过键盘处理（鼠标交互仍保留）
+            bool inputBlocked = GlobalInputManager.Instance != null && GlobalInputManager.Instance.IsGameInputBlocked;
+
             // 旋转 - Q键逆时针，E键顺时针，R键90度
             // 注意：鼠标中键已用于拖动视角（MapInputController），不再绑定旋转
-            if (Input.GetKeyDown(KeyCode.Q))
+            if (!inputBlocked && Input.GetKeyDown(KeyCode.Q))
             {
                 SetRotation(currentRotation - 90);
             }
-            else if (Input.GetKeyDown(KeyCode.E))
+            else if (!inputBlocked && Input.GetKeyDown(KeyCode.E))
             {
                 SetRotation(currentRotation + 90);
             }
-            else if (Input.GetKeyDown(KeyCode.R))
+            else if (!inputBlocked && Input.GetKeyDown(KeyCode.R))
             {
                 Rotate90();
             }
@@ -316,7 +319,7 @@ namespace PomodoroTimer.Map.Sprite2D
             }
 
             // 取消 - 右键或ESC
-            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+            if (Input.GetMouseButtonDown(1) || (!inputBlocked && Input.GetKeyDown(KeyCode.Escape)))
             {
                 CancelPlacement();
             }

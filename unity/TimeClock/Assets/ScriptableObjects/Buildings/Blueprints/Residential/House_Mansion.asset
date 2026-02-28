@@ -17,7 +17,7 @@ MonoBehaviour:
   localizationKey: house_mansion
   localizationTable: Bld_Residential
   category: 1
-  previewIcon: {fileID: -5304723880251448415, guid: f7ea50002054e80449f439007c4637a5, type: 3}
+  previewIcon: {fileID: 3408585734809168571, guid: 89419f38cfc29454783f0589361578da, type: 3}
   description: "\u5E26\u82B1\u56ED\u7684\u6E29\u99A8\u5927\u623F\u5B50"
   baseSize: {x: 2, y: 2}
   occupancyMask:
@@ -158,7 +158,7 @@ MonoBehaviour:
   ambientSound: {fileID: 0}
   buildCosts:
   - resourceType: 0
-    amount: 40
+    amount: 35
   - resourceType: 1
     amount: 30
   storageCapacities:

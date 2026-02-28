@@ -345,7 +345,7 @@ namespace PomodoroTimer.UI
             SetColorButtonsInteractable(true);
 
             // 显示编辑面板
-            taskEditPanel?.SetActive(true);
+            ShowEditPanel();
         }
         
         private void OnSaveTaskClicked()
@@ -368,9 +368,9 @@ namespace PomodoroTimer.UI
                 // 创建新任务
                 TaskManager.Instance.CreateTask(taskName, selectedColorIndex);
             }
-            
+
             // 关闭编辑面板
-            taskEditPanel?.SetActive(false);
+            HideEditPanel();
         }
         
         private void OnDeleteTaskClicked()
@@ -422,15 +422,15 @@ namespace PomodoroTimer.UI
                 }
                 
                 TaskManager.Instance.DeleteTask(editingTask.id);
-                
+
                 // 关闭编辑面板
-                taskEditPanel?.SetActive(false);
+                HideEditPanel();
             });
         }
         
         private void OnCancelEditClicked()
         {
-            taskEditPanel?.SetActive(false);
+            HideEditPanel();
         }
 
         /// <summary>
@@ -580,9 +580,9 @@ namespace PomodoroTimer.UI
             SetColorButtonsInteractable(!timerBusy);
 
             // 显示编辑面板
-            taskEditPanel?.SetActive(true);
+            ShowEditPanel();
         }
-        
+
         #endregion
         
         #region 任务管理器事件处理
@@ -660,5 +660,33 @@ namespace PomodoroTimer.UI
                 }
             }
         }
+
+        #region 编辑面板输入屏蔽
+
+        /// <summary>
+        /// 显示编辑面板并屏蔽游戏键盘输入
+        /// </summary>
+        private void ShowEditPanel()
+        {
+            if (taskEditPanel == null) return;
+            taskEditPanel.SetActive(true);
+            GlobalInputManager.Instance?.PushInputBlock();
+        }
+
+        /// <summary>
+        /// 隐藏编辑面板并恢复游戏键盘输入
+        /// </summary>
+        private void HideEditPanel()
+        {
+            if (taskEditPanel == null) return;
+            if (taskEditPanel.activeSelf)
+            {
+                GlobalInputManager.Instance?.PopInputBlock();
+            }
+            taskEditPanel.SetActive(false);
+        }
+
+        #endregion
     }
 }
+

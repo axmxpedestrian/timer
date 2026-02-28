@@ -163,8 +163,11 @@ namespace PomodoroTimer.UI.Building
 
         private void HandleInput()
         {
+            // 键盘输入被 UI 面板屏蔽时跳过 ESC 处理
+            bool inputBlocked = GlobalInputManager.Instance != null && GlobalInputManager.Instance.IsGameInputBlocked;
+
             // ESC 退出
-            if (Input.GetKeyDown(KeyCode.Escape))
+            if (!inputBlocked && Input.GetKeyDown(KeyCode.Escape))
             {
                 ExitDemolishMode();
                 return;

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 11f9a85cb170e694b91064ca86af915e
+guid: d8b65e8fa4e9f3a4aa11bc4949a5158f
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 639062732486466989
+  platformSettingsDirtyTick: 639078997073142605
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -122,7 +122,7 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Found_128x64
+  - name: Gound_128x64
     originalName: 
     pivot: {x: 0.5, y: 0}
     alignment: 9
@@ -133,7 +133,7 @@ ScriptedImporter:
       y: 4
       width: 128
       height: 64
-    spriteID: 5923c2cb4df211740ba73c0a4a307101
+    spriteID: 7246cc9391dc2ab4eb53094e673a25c5
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -145,13 +145,13 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: 2060618694
-    name: Found_128x64
+    guid: 2104282085
+    name: Gound_128x64
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: Found_128x64
+    - name: Gound_128x64
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
@@ -159,7 +159,7 @@ ScriptedImporter:
         y: 0
         width: 128
         height: 64
-      spriteId: 5923c2cb4df211740ba73c0a4a307101
+      spriteId: 7246cc9391dc2ab4eb53094e673a25c5
     linkedCells: []
     parentIndex: -1
   platformSettings:

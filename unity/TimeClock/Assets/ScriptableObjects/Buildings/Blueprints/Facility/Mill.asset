@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blueprintId: 5
   buildingName: "\u78E8\u574A"
-  localizationKey: mill
+  localizationKey: Mill
   localizationTable: Bld_Facility
   category: 4
   previewIcon: {fileID: 7051093470554924345, guid: f43a6240ef7269e49a948084de327151, type: 3}
